@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Module name="harmony-services" id="559c1e35-a0f8-4382-ad9c-58d2a1c2a8b9" version="1.0.0">
+    <ConfigRoot path="config/module.py"/>
+</Module>
