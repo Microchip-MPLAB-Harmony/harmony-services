@@ -1,0 +1,10 @@
+packagePluginConfiguration:
+- name: Harmony File Server
+  pluginID: HARMONY_FILE_SERVER
+  binaryFilePath: plugins\http_file_server.jar
+  typeOfPlugin: JAVA
+  loadingType: IMMEDIATE
+  isHeadless: false
+  initArgs:
+    pluginClass: com.microchip.mh3.plugin.http_file_server.GenericPackagePlugin
+
