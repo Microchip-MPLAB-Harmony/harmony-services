@@ -7,4 +7,11 @@ packagePluginConfiguration:
   isHeadless: false
   initArgs:
     pluginClass: com.microchip.mh3.plugin.http_file_server.GenericPackagePlugin
-
+- name: JXBrowser Engine Instatnce
+  pluginID: JXBROWSER_ENGINE_INSTANCE
+  binaryFilePath: plugins\browser_engine.jar
+  typeOfPlugin: JAVA
+  loadingType: IMMEDIATE
+  isHeadless: false
+  initArgs:
+    pluginClass: com.microchip.mh3.plugin.browser_engine.GenericPackagePlugin

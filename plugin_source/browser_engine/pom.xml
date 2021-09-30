@@ -11,13 +11,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>harmony-database</groupId>
-            <artifactId>harmony-database</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${env.HARMONY3_DIR}/mhc/harmony-database.jar</systemPath>
-        </dependency>
+     
        <dependency>
             <groupId>mhc</groupId>
             <artifactId>mhc</artifactId>
@@ -25,26 +19,8 @@
             <version>1.0</version>
             <systemPath>${env.HARMONY3_DIR}/mhc/mhc.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>browser_engine</groupId>
-            <artifactId>browser_engine</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${env.HARMONY3_DIR}/harmony-services/plugins/browser_engine.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>mhc_utils</groupId>
-            <artifactId>mhc_utils</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${env.HARMONY3_DIR}/mhc/mhc_utils.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.16</version>
-            <scope>provided</scope>
-        </dependency>
+     
+   
         <dependency>
             <groupId>com.teamdev.jxbrowser</groupId>
             <artifactId>jxbrowser-cross-platform</artifactId>
@@ -66,7 +42,7 @@
     </repositories>
 
     <build>
-        <finalName>generic_plugin_manager</finalName>
+        <finalName>browser_engine</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -143,4 +119,5 @@
             </resource>
         </resources>
     </build>
+    <name>browser_engine</name>
 </project>

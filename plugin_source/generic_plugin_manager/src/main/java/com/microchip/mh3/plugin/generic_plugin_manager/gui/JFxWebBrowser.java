@@ -5,23 +5,26 @@
  */
 package com.microchip.mh3.plugin.generic_plugin_manager.gui;
 
+
 import com.microchip.mh3.log.Log;
+import com.microchip.mh3.plugin.browser_engine.JXBrowserEngineInstance;
 import com.teamdev.jxbrowser.browser.Browser;
 import com.teamdev.jxbrowser.browser.callback.AlertCallback;
+import com.teamdev.jxbrowser.browser.callback.CreatePopupCallback;
 import com.teamdev.jxbrowser.browser.callback.InjectJsCallback;
 import com.teamdev.jxbrowser.browser.callback.input.MoveMouseWheelCallback;
 import com.teamdev.jxbrowser.browser.callback.input.PressKeyCallback;
 import com.teamdev.jxbrowser.engine.Engine;
-import com.teamdev.jxbrowser.engine.EngineOptions;
-import static com.teamdev.jxbrowser.engine.RenderingMode.HARDWARE_ACCELERATED;
 import com.teamdev.jxbrowser.frame.Frame;
 import com.teamdev.jxbrowser.js.JsObject;
 import com.teamdev.jxbrowser.ui.event.KeyPressed;
 import com.teamdev.jxbrowser.ui.event.MouseWheel;
 import com.teamdev.jxbrowser.view.javafx.BrowserView;
-import java.io.File;
+import java.awt.Desktop;
+import java.io.IOException;
 import static java.lang.String.format;
-import java.nio.file.Paths;
+import java.net.URI;
+import java.net.URISyntaxException;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
@@ -30,7 +33,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 
-public class JFxWebBrowser extends Region {
+public final class JFxWebBrowser extends Region {
 
      /** for communication from the Javascript engine. */
     private final JavaConnector javaConnector = new JavaConnector();
@@ -38,6 +41,8 @@ public class JFxWebBrowser extends Region {
     private  Engine engine = null ;
     private  BrowserView browserView;
     private  Browser browser;
+    
+    public static final String PREFERRED_ID = "DVMainWindow";
 
     public Browser getBrowser() {
         return browser;
@@ -54,14 +59,7 @@ public class JFxWebBrowser extends Region {
     public JFxWebBrowser(Stage parentStage, String url) {
         try {
             this.parentStage = parentStage;
-            engine = Engine.newInstance(
-                    EngineOptions.newBuilder(HARDWARE_ACCELERATED)
-                            .chromiumDir(Paths.get(System.getProperty("user.home"), ".jxbrowser"))
-                            .licenseKey("6P835FT5HAF7IFUZKRD2L06GCIKZC0KMH6SG3VPQOW8Q2KK9373VA8HTH0G1FA2HIJ23")
-                            .build());
-
-            browser = engine.newBrowser();
-
+            browser = JXBrowserEngineInstance.getEngine().newBrowser();
             browser.set(InjectJsCallback.class, params -> {
                 Frame frame = params.frame();
                 String window = "window";
@@ -91,6 +89,11 @@ public class JFxWebBrowser extends Region {
                 }
                 return PressKeyCallback.Response.proceed();
             });
+            
+            browser.set(CreatePopupCallback.class, (params) -> {
+                openWebDirectory(params.targetUrl());
+                return CreatePopupCallback.Response.suppress();
+            });
 
             addStageListners();
 
@@ -114,8 +117,21 @@ public class JFxWebBrowser extends Region {
             Log.printException(ex);
         }
     }
-    
-    
+    public static void openWebDirectory(String url){
+        new Thread(() -> {
+            try {
+                URI uri = new URI(url);
+                Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                    try {
+                        desktop.browse(uri);
+                    } catch (IOException e) {
+                    }
+                }
+            } catch (URISyntaxException ex) {
+            }
+        }).start();
+    }
 
     @Override
     protected void layoutChildren() {
@@ -150,11 +166,21 @@ public class JFxWebBrowser extends Region {
         });
     }
     
-    public void clearObjects(){
-        browser.close();
-        engine.close();
-        browser = null;
-        engine = null;
-        browserView = null;
+    public void clearObjects() {
+        try {
+            if(browser!=null){
+                browser.close();
+                browser = null;
+            }
+           
+            if(browserView!=null){
+                browserView.getChildren().clear();
+                browserView = null;
+            }
+           System.gc(); 
+        } catch (Exception ex) {
+            Log.printException(ex);
+        }
+
     }
 }

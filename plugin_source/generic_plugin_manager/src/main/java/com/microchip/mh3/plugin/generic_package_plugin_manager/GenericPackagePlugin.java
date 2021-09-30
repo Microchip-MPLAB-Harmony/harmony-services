@@ -17,18 +17,20 @@ import javafx.stage.WindowEvent;
 public class GenericPackagePlugin implements PackagePlugin {
 
     private Path pluginJarPath = null;
-    
+
     public Map<String, Object> settingsMap;
     public static String pluginManagerName = "";
     public String pluginVersion = "";
     public static String mainHtmlPath;
 
-    public static String COMPONENT_ID ;
-    
+    public static String COMPONENT_ID;
+
     MainScreen jfxBrowserStage;
-    
+
+    Stage progressStage;
+
     private PluginConfiguration pluginConfiguration;
-     private Runnable deregister;
+    private Runnable deregister;
 
     @Override
     public String getName() {
@@ -40,16 +42,15 @@ public class GenericPackagePlugin implements PackagePlugin {
         return pluginVersion;
     }
 
-
-    private void logError(){
-        Log.write(pluginManagerName, Log.Severity.Warning, 
-                        "Failed to open "+pluginManagerName+". Load plugin before opening "+pluginManagerName, Log.Level.DEBUG);
+    private void logError() {
+        Log.write(pluginManagerName, Log.Severity.Warning,
+                "Failed to open " + pluginManagerName + ". Load plugin before opening " + pluginManagerName, Log.Level.DEBUG);
     }
 
     private void openManagerAsWindow() {
         Platform.runLater(this::createAndShowStage);
     }
- 
+
     private Stage stage = null;
 
     private void createAndShowStage() {
@@ -68,7 +69,6 @@ public class GenericPackagePlugin implements PackagePlugin {
             Log.printException(ex);
             logError();
         }
-
     }
 
     private Scene createDashboard() {
@@ -83,7 +83,7 @@ public class GenericPackagePlugin implements PackagePlugin {
 
     @Override
     public String reasonOfFail() {
-       return "";
+        return "";
     }
 
     @Override
@@ -91,27 +91,26 @@ public class GenericPackagePlugin implements PackagePlugin {
         if (Core.getInstance().getType() == Core.Type.Headless) {
             return true;
         }
-        
+
         this.pluginConfiguration = pc;
-        pluginManagerName = (String)pluginConfiguration.getName();
+        pluginManagerName = (String) pluginConfiguration.getName();
 
         FxSupport.enable();
-        
-        Log.write(pluginManagerName, Log.Severity.Info, "initialize "+ pluginManagerName + " plugin", Log.Level.USER);
-        
-        
+
+        Log.write(pluginManagerName, Log.Severity.Info, "initialize " + pluginManagerName + " plugin", Log.Level.USER);
+
         this.pluginJarPath = pluginConfiguration.getPackagePath().resolve(pluginConfiguration.getBinaryFilePath());
-        
-        Log.write(pluginManagerName, Log.Severity.Info, "Jar Path:  "+ pluginJarPath , Log.Level.USER);
+
+        Log.write(pluginManagerName, Log.Severity.Info, "Jar Path:  " + pluginJarPath, Log.Level.USER);
 
         deregister = PackagePluginManager.singleton().registerMenuItem(this, pluginManagerName, this::openManagerAsWindow);
-        
-        mainHtmlPath = (String)pluginConfiguration.getInitArgs().get("main_html_path");
-        
-        Log.write("Generic HTML Path", Log.Severity.Info, "Main HTML path for "
-                + "\"" +pluginManagerName + "\" : "+GenericPackagePlugin.mainHtmlPath , Log.Level.USER);
 
-        Log.write(pluginManagerName, Log.Severity.Info, "loading "+ pluginManagerName +" plugin", Log.Level.USER);
+        mainHtmlPath = (String) pluginConfiguration.getInitArgs().get("main_html_path");
+
+        Log.write("Generic HTML Path", Log.Severity.Info, "Main HTML path for "
+                + "\"" + pluginManagerName + "\" : " + GenericPackagePlugin.mainHtmlPath, Log.Level.USER);
+
+        Log.write(pluginManagerName, Log.Severity.Info, "loading " + pluginManagerName + " plugin", Log.Level.USER);
         return true;
     }
 
@@ -121,21 +120,23 @@ public class GenericPackagePlugin implements PackagePlugin {
             return true;
         }
         deregister.run();
+        if (jfxBrowserStage != null) {
+            jfxBrowserStage.clearObjects();
+        }
         Platform.runLater(() -> {
-            if(stage!=null){
+
+            if (stage != null) {
                 stage.close();
                 stage = null;
             }
-            if (jfxBrowserStage != null) {
-                jfxBrowserStage.clearObjects();
-            }
         });
-        Log.write(pluginManagerName, Log.Severity.Info, "unloading "+ pluginManagerName +" plugin", Log.Level.USER);
+        Log.write(pluginManagerName, Log.Severity.Info, "unloading " + pluginManagerName + " plugin", Log.Level.USER);
+        System.gc();
         return true;
     }
 
     @Override
     public PluginConfiguration getConfig() {
-         return pluginConfiguration;
+        return pluginConfiguration;
     }
 }

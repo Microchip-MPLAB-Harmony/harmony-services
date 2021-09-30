@@ -33,6 +33,12 @@ public class MainScreen  {
     }
     
     public void clearObjects(){
-        browser.clearObjects();
+        if(browser!=null){
+            browser.clearObjects();
+            browser = null;
+        }
+        if(scene!=null){
+            scene = null;
+        }
     }
 }
