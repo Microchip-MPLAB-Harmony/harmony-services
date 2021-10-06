@@ -77,7 +77,6 @@ public class GenericPackagePlugin implements PackagePlugin {
         if (Core.getInstance().getType() == Core.Type.Headless) {
             return true;
         }
-        deregister.run();
         
         JXBrowserEngineInstance.CloseEngine();
        
