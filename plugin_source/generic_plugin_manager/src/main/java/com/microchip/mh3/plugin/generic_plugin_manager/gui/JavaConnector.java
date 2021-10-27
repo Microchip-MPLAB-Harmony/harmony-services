@@ -86,4 +86,11 @@ public final class JavaConnector {
     public double getScreenHeight(){
         return MainScreen.parentStage.getHeight();
     }
+    
+    @JsAccessible
+    public String getPortNumber(){
+        return System.getProperty("HARMONY_SERVER_PORT");
+    }
+    
+    
 }

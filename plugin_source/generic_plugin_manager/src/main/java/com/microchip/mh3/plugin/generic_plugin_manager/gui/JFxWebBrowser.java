@@ -8,6 +8,7 @@ package com.microchip.mh3.plugin.generic_plugin_manager.gui;
 
 import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.browser_engine.JXBrowserEngineInstance;
+import static com.microchip.mh3.plugin.generic_package_plugin_manager.GenericPackagePlugin.pluginManagerName;
 import com.teamdev.jxbrowser.browser.Browser;
 import com.teamdev.jxbrowser.browser.callback.AlertCallback;
 import com.teamdev.jxbrowser.browser.callback.CreatePopupCallback;
@@ -108,6 +109,10 @@ public final class JFxWebBrowser extends Region {
                 String message = params.message();
                 String okActionText = params.okActionText();
                 System.out.println(message);
+                if(message.startsWith("Missing_Symbol:")){
+                    Log.write(pluginManagerName, Log.Severity.Error, "The following symbol id is missing from mc_plant : "
+                            + ""+message.replace("Missing_Symbol:", message), Log.Level.USER);
+                }
                 tell.ok();
             });
 
