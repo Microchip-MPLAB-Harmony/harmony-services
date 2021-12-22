@@ -1,4 +1,4 @@
-package com.microchip.mh3.plugin.generic_plugin_manager.javafx;
+package com.microchip.mh3.plugin.generic_plugin.javafx;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;

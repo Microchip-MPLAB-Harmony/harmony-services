@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.microchip.mh3.plugin.generic_plugin_manager.database;
+package com.microchip.mh3.plugin.generic_plugin.database;
 
 import com.microchip.h3.database.attribute.KeyValuePairListAttribute;
 import com.microchip.h3.database.symbol.ComboSymbol;
@@ -14,17 +14,16 @@ import com.microchip.h3.database.symbol.KeyValueSetSymbol;
 import com.microchip.h3.database.symbol.Symbol;
 import com.microchip.mh3.database.Database;
 import com.microchip.mh3.log.Log;
-import static com.microchip.mh3.plugin.generic_package_plugin_manager.GenericPackagePlugin.pluginManagerName;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseAccess {
     
-    public static void setParameterValue(String szComponentID, String symbolId, Object value) {
+    public static void setParameterValue(String pluginMangerName, String szComponentID, String symbolId, Object value) {
         Symbol sym = Database.get().getComponentManager().getSymbolByID(null, szComponentID, symbolId);
          
         if(sym == null) { 
-            Log.write(pluginManagerName, Log.Severity.Error, "Symbol ID not found : " + symbolId, Log.Level.USER);
+            Log.write(pluginMangerName, Log.Severity.Error, "Symbol ID not found : " + symbolId, Log.Level.USER);
             return; }
         
         switch (sym.getSymbolType()) {

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.microchip.mh3.plugin.generic_plugin_manager.gui.tools;
+package com.microchip.mh3.plugin.generic_plugin.gui.tools;
 
 import java.util.Optional;
 import javafx.scene.control.Alert;
