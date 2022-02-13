@@ -14,7 +14,6 @@ public class GenericPackagePlugin implements PackagePlugin {
     public Map<String, Object> settingsMap;
     public static String pluginManagerName = "";
     public String pluginVersion = "";
-    public static String mainHtmlPath;
 
     public static String COMPONENT_ID ;
     
@@ -59,10 +58,7 @@ public class GenericPackagePlugin implements PackagePlugin {
         pluginManagerName = (String)pluginConfiguration.getName();
         
         Log.write(pluginManagerName, Log.Severity.Info, "initialize "+ pluginManagerName + " plugin", Log.Level.USER);
-        
-        JXBrowserEngineInstance.createEngineInstatnce();
-        
-        
+
         this.pluginJarPath = pluginConfiguration.getPackagePath().resolve(pluginConfiguration.getBinaryFilePath());
         
         Log.write(pluginManagerName, Log.Severity.Info, "Jar Path:  "+ pluginJarPath , Log.Level.USER);
@@ -77,8 +73,8 @@ public class GenericPackagePlugin implements PackagePlugin {
         if (Core.getInstance().getType() == Core.Type.Headless) {
             return true;
         }
-        
-        JXBrowserEngineInstance.CloseEngine();
+        Log.write("MCCHarmony", Log.Severity.Info, "unloading "+ pluginManagerName +" plugin", Log.Level.USER);
+        JXbrowserEngine.deleteBrowserTempFiles();
        
         Log.write(pluginManagerName, Log.Severity.Info, "unloading "+ pluginManagerName +" plugin", Log.Level.USER);
         System.gc(); 

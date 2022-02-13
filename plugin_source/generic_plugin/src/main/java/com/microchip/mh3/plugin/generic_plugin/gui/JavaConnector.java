@@ -27,6 +27,7 @@ public final class JavaConnector {
             String symbolValue = DatabaseAccess.getParameterValue(componentId, symbolId).toString();
             return symbolValue;
         }catch(Exception e){
+            Log.write(pluginManagerName, Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
             Log.printException(e);
         }
         return null;
@@ -43,10 +44,11 @@ public final class JavaConnector {
                     builder.append("M*C");
                 }
             }
-            String joined = String.join("M*C", comboValues);
-            System.out.println(joined);
+//            String joined = String.join("M*C", comboValues);
+//            System.out.println(joined);
             return builder.toString();
         } catch (Exception e) {
+            Log.write(pluginManagerName, Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
             Log.printException(e);
         }
         return null;

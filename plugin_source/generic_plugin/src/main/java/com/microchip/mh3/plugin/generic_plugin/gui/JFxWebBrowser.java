@@ -7,7 +7,7 @@ package com.microchip.mh3.plugin.generic_plugin.gui;
 
 
 import com.microchip.mh3.log.Log;
-import com.microchip.mh3.plugin.browser_engine.JXBrowserEngineInstance;
+import com.microchip.mh3.plugin.browser_engine.JXbrowserEngine;
 import com.teamdev.jxbrowser.browser.Browser;
 import com.teamdev.jxbrowser.browser.callback.AlertCallback;
 import com.teamdev.jxbrowser.browser.callback.CreatePopupCallback;
@@ -44,6 +44,8 @@ public final class JFxWebBrowser extends Region {
     private  Browser browser;
     private String pluginManagerName;
     
+    public JXbrowserEngine  browserEngine;
+    
     public final String PREFERRED_ID = "DVMainWindow";
 
     public Browser getBrowser() {
@@ -66,7 +68,9 @@ public final class JFxWebBrowser extends Region {
             this.parentStage = parentStage;
             this.pluginManagerName = pluginManagerName;
             javaConnector = new JavaConnector(pluginManagerName, parentStage);
-            browser = JXBrowserEngineInstance.getEngine().newBrowser();
+            browserEngine = new JXbrowserEngine();
+            browser = browserEngine.getBrowserInstance(pluginManagerName);
+            Log.write(pluginManagerName, Log.Severity.Info, "JXBrowser user directory : " + browser.engine().options().userDataDir(), Log.Level.USER);
             browser.set(InjectJsCallback.class, params -> {
                 Frame frame = params.frame();
                 String window = "window";
@@ -116,9 +120,10 @@ public final class JFxWebBrowser extends Region {
                 String okActionText = params.okActionText();
                 System.out.println(message);
                 if(message.startsWith("Missing_Symbol:")){
-                    Log.write(pluginManagerName, Log.Severity.Error, "The following symbol id is missing from mc_plant : "
-                            + ""+message.replace("Missing_Symbol:", message), Log.Level.USER);
+                    Log.write(pluginManagerName, Log.Severity.Error, "The following symbol id is missing : "
+                            + ""+ message.replaceAll("Missing_Symbol:", ""), Log.Level.USER);
                 }
+                Log.write(pluginManagerName, Log.Severity.Info, message, Log.Level.USER);
                 tell.ok();
             });
             
@@ -127,7 +132,7 @@ public final class JFxWebBrowser extends Region {
             //add components
             getChildren().add(browserView);
         } catch (Exception ex) {
-            Log.printException(ex);
+            Log.write(pluginManagerName, Log.Severity.Error, "Error:  " + ex.toString(), Log.Level.USER);
         }
     }
     public static void openWebDirectory(String url){
@@ -189,6 +194,9 @@ public final class JFxWebBrowser extends Region {
         try {
             if(browser!=null){
                 browser.close();
+                browserEngine.disPoseBrowserEvent(pluginManagerName);
+                browserEngine.removeUsedUserDirectory(browser.engine().options().userDataDir());
+                browserEngine = null;
                 browser = null;
             }
            
@@ -196,8 +204,8 @@ public final class JFxWebBrowser extends Region {
                 browserView.getChildren().clear();
                 browserView = null;
             }
-           System.gc(); 
         } catch (Exception ex) {
+            Log.write(pluginManagerName, Log.Severity.Error, "Unable to clear browser objects", Log.Level.USER);
             Log.printException(ex);
         }
 

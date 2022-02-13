@@ -42,6 +42,7 @@ public class GenericPackagePlugin implements PackagePlugin {
             browserLauncher.createAndShowStage();
         });
     }
+    
 
     @Override
     public boolean canUse() {

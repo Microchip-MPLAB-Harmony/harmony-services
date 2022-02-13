@@ -12,25 +12,11 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>harmony-database</groupId>
-            <artifactId>harmony-database</artifactId>
+            <groupId>Harmony3Library</groupId>
+            <artifactId>Harmony3Library</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${env.HARMONY3_DIR}/mhc/harmony-database.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>mhc</groupId>
-            <artifactId>mhc</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${env.HARMONY3_DIR}/mhc/mhc.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>mhc_utils</groupId>
-            <artifactId>mhc_utils</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${env.HARMONY3_DIR}/mhc/mhc_utils.jar</systemPath>
+            <systemPath>${env.USER_HOME_DIR}/.mcc/libraries/Harmony3Library_v1.0.8/Harmony3Library.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

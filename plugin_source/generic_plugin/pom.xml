@@ -12,32 +12,32 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>harmony-database</groupId>
-            <artifactId>harmony-database</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${env.HARMONY3_DIR}/mhc/harmony-database.jar</systemPath>
-        </dependency>
-       <dependency>
-            <groupId>mhc</groupId>
-            <artifactId>mhc</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${env.HARMONY3_DIR}/mhc/mhc.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>browser_engine</groupId>
+            <groupId>com.microchip.mh3.plugin</groupId>
             <artifactId>browser_engine</artifactId>
             <scope>system</scope>
             <version>1.0</version>
             <systemPath>${env.HARMONY3_DIR}/harmony-services/plugins/browser_engine.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>mhc_utils</groupId>
-            <artifactId>mhc_utils</artifactId>
+            <groupId>Harmony3Library</groupId>
+            <artifactId>Harmony3Library</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${env.HARMONY3_DIR}/mhc/mhc_utils.jar</systemPath>
+            <systemPath>${env.USER_HOME_DIR}/.mcc/libraries/Harmony3Library_v1.0.8/Harmony3Library.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>jxbrowser</groupId>
+            <artifactId>jxbrowser</artifactId>
+            <scope>system</scope>
+            <version>7.20</version>
+            <systemPath>${env.MPLABX_PLATFORM_DIR}/browser-lib/modules/ext/jxbrowser.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>browser_javafx</groupId>
+            <artifactId>browser_javafx</artifactId>
+            <scope>system</scope>
+            <version>7.20</version>
+            <systemPath>${env.MPLABX_PLATFORM_DIR}/browser-lib/modules/ext/jxbrowser-javafx.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -45,26 +45,9 @@
             <version>1.18.16</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.teamdev.jxbrowser</groupId>
-            <artifactId>jxbrowser-cross-platform</artifactId>
-            <version>7.16</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>com.teamdev.jxbrowser</groupId>
-            <artifactId>jxbrowser-javafx</artifactId>
-            <version>7.16</version>
-        </dependency>
+      
     </dependencies>
     
-    <repositories>
-        <repository>
-            <id>com.teamdev</id>
-            <url>https://europe-maven.pkg.dev/jxbrowser/releases</url>
-        </repository>
-    </repositories>
-
     <build>
         <finalName>generic_plugin</finalName>
         <plugins>
@@ -100,7 +83,6 @@
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
-                            <excludeArtifactIds>core,mockito-all,hamcrest-core,hamcrest-all,junit</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>

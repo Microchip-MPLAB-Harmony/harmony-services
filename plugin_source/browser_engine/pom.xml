@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.microchip.mh3.plugin</groupId>
-    <artifactId>generic_plugin_manager</artifactId>
+    <artifactId>browser_engine</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
@@ -11,36 +11,49 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <dependencies>
-     
-       <dependency>
-            <groupId>mhc</groupId>
-            <artifactId>mhc</artifactId>
+      <dependency>
+            <groupId>Harmony3Library</groupId>
+            <artifactId>Harmony3Library</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${env.HARMONY3_DIR}/mhc/mhc.jar</systemPath>
-        </dependency>
-     
-   
-        <dependency>
-            <groupId>com.teamdev.jxbrowser</groupId>
-            <artifactId>jxbrowser-cross-platform</artifactId>
-            <version>7.16</version>
-            <type>pom</type>
+            <systemPath>${env.USER_HOME_DIR}/.mcc/libraries/Harmony3Library_v1.0.8/Harmony3Library.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>com.teamdev.jxbrowser</groupId>
-            <artifactId>jxbrowser-javafx</artifactId>
-            <version>7.16</version>
+            <groupId>MccCore</groupId>
+            <artifactId>MccCore</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${env.USER_HOME_DIR}/.mcc/cores/5.4.0/core.jar</systemPath>
+        </dependency>
+         <dependency>
+            <groupId>lookup</groupId>
+            <artifactId>lookup</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${env.MPLABX_PLATFORM_DIR}/platform/lib/org-openide-util-lookup.jar</systemPath>
+        </dependency>
+          <dependency>
+            <groupId>browser_service</groupId>
+            <artifactId>browser_service</artifactId>
+            <scope>system</scope>
+             <version>1.0</version>
+            <systemPath>${env.MPLABX_PLATFORM_DIR}/browser-lib/modules/com-microchip-mplab-browser-libs.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>jxbrowser</groupId>
+            <artifactId>jxbrowser</artifactId>
+            <scope>system</scope>
+            <version>7.20</version>
+            <systemPath>${env.MPLABX_PLATFORM_DIR}/browser-lib/modules/ext/jxbrowser.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>browser_javafx</groupId>
+            <artifactId>browser_javafx</artifactId>
+            <scope>system</scope>
+            <version>7.20</version>
+            <systemPath>${env.MPLABX_PLATFORM_DIR}/browser-lib/modules/ext/jxbrowser-javafx.jar</systemPath>
         </dependency>
     </dependencies>
-    
-    <repositories>
-        <repository>
-            <id>com.teamdev</id>
-            <url>https://europe-maven.pkg.dev/jxbrowser/releases</url>
-        </repository>
-    </repositories>
-
     <build>
         <finalName>browser_engine</finalName>
         <plugins>
@@ -119,5 +132,4 @@
             </resource>
         </resources>
     </build>
-    <name>browser_engine</name>
 </project>

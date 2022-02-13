@@ -32,7 +32,6 @@ public class BrowserLauncher  {
     public Scene getScene(String url) {
         localHost = "http://localhost:"+System.getProperty("HARMONY_SERVER_PORT")+"/";
         browser = new JFxWebBrowser(stage, localHost + url, pluginManagerName);
-//        browser = new JFxWebBrowser(stage, "http://localhost:3000/", pluginManagerName);
         scene = new Scene(browser);
         return scene;
     }
@@ -57,6 +56,7 @@ public class BrowserLauncher  {
                 stage = new Stage();
                 stage.setScene(getScene(mainHtmlPath));
                 stage.setTitle(pluginManagerName);
+                stage.setMaximized(true);
                 stage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, e -> {
                     clearObjects();
                     this.stage = null;
@@ -65,6 +65,7 @@ public class BrowserLauncher  {
             stage.show();
             stage.toFront();
         } catch (Exception ex) {
+            Log.write(pluginManagerName, Log.Severity.Error, "Unable to create stage ", Log.Level.USER);
             Log.printException(ex);
             logError();
         }
