@@ -1,41 +1,43 @@
-﻿![Microchip logo](https://raw.githubusercontent.com/wiki/Microchip-MPLAB-Harmony/Microchip-MPLAB-Harmony.github.io/images/microchip_logo.png)
-![Harmony logo small](https://raw.githubusercontent.com/wiki/Microchip-MPLAB-Harmony/Microchip-MPLAB-Harmony.github.io/images/microchip_mplab_harmony_logo_small.png)
+﻿# Harmony Services
 
-# MPLAB® Harmony 3 replaceme
+Harmony Services repository is required to launch  Harmony **package**/**component**  HTML based plugins. It contains common **Harmony generic plugin** and **Harmony file server** java libraries required for HTML based plugins.
 
-MPLAB® Harmony 3 is an extension of the MPLAB® ecosystem for creating embedded firmware solutions for Microchip 32-bit SAM and PIC® microcontroller and microprocessor devices.  Refer to the following links for more information.
+This package contains both harmony service binaries and along with its implementation source code.
 
-- [Microchip 32-bit MCUs](https://www.microchip.com/design-centers/32-bit)
-- [Microchip 32-bit MPUs](https://www.microchip.com/design-centers/32-bit-mpus)
-- [Microchip MPLAB X IDE](https://www.microchip.com/mplab/mplab-x-ide)
-- [Microchip MPLAB® Harmony](https://www.microchip.com/mplab/mplab-harmony)
-- [Microchip MPLAB® Harmony Pages](https://microchip-mplab-harmony.github.io/)
+## Harmony Services Package Setup
 
-This repository contains the MPLAB® Harmony 3 replaceme solutions and example applications. Quickly incorporate connectivity to your designs with replaceme ICs, modules, software and development kits that make connecting effortless for your customers. Our comprehensive replaceme portfolio has the technology to meet your range, data rate, interoperability, frequency and topology needs. Refer to the following links for release notes, training materials, and interface reference information.
+- Install/Update MPLAB X 6.00 or later
+- Install/Update MCC MPLAB X Plugin
+- Update MCC Harmony3Library to its latest release using Content Manager
+- Download/Update the harmony-services from Content Manager
+- After configuring above setup, now Harmony Services is ready to launch package/component HTML based plugins.
 
-- [Release Notes](./release_notes.md)
-- [MPLAB® Harmony License](mplab_harmony_license.md)
-- [MPLAB® Harmony 3 replaceme Wiki](https://github.com/Microchip-MPLAB-Harmony/replaceme/wiki)
-- [MPLAB® Harmony 3 replaceme API Help](https://microchip-mplab-harmony.github.io/replaceme)
+## Contents Summary
 
-# Contents Summary
+| File/Folder           | Description                                               |
+|---|---|
+| docs                   | Help documentation and licenses for libraries used        |
+| plugin_source          | Binaries source code available            |
+| plugin/browser_engine             | This binary helps to provide HTML Engine/Browser instances to view HTML Content.                 |
+| plugin/generic_plugin               | This binary is generic and used to lauch multiple package/component plugins dynamically through external input package configuration yml file.                |
+| plugin/http_file_server                 | This binary serves Harmony Framework files.                      |
+| plugin/lib               | Lib folder contains all required dependency jars.          |
 
-| Folder     | Description                                               |
-| ---        | ---                                                       |
-| apps        | Example applications for replaceme library components      |
-| config     | replaceme module configuration file                        |
-| docs       | replaceme library help documentation                       |
-| drivers    | Driver/Firmware files for different products              |
+## Open source Libraries
 
+Harmony Services binaries uses following open sources libraries:
+
+| Library Name                                  | Version                    | License                                                                                               |
+|-----------------------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------|
+|[jetty-http-9.4.8.v20171121.jar](https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server/9.4.8.v20171121)                     | 9.4.8.v20171121             |             Apache 2.0, EPL 1.0 [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 ____
 
-[![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/replaceme/blob/master/mplab_harmony_license.md)
-[![Latest release](https://img.shields.io/github/release/Microchip-MPLAB-Harmony/replaceme.svg)](https://github.com/Microchip-MPLAB-Harmony/replaceme/releases/latest)
-[![Latest release date](https://img.shields.io/github/release-date/Microchip-MPLAB-Harmony/replaceme.svg)](https://github.com/Microchip-MPLAB-Harmony/replaceme/releases/latest)
-[![Commit activity](https://img.shields.io/github/commit-activity/y/Microchip-MPLAB-Harmony/replaceme.svg)](https://github.com/Microchip-MPLAB-Harmony/replaceme/graphs/commit-activity)
-[![Contributors](https://img.shields.io/github/contributors-anon/Microchip-MPLAB-Harmony/replaceme.svg)]()
-
+[![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/harmony-services/blob/master/mplab_harmony_license.md)
+[![Latest release](https://img.shields.io/github/release/Microchip-MPLAB-Harmony/harmony-services.svg)](https://github.com/Microchip-MPLAB-Harmony/harmony-services/releases/latest)
+[![Latest release date](https://img.shields.io/github/release-date/Microchip-MPLAB-Harmony/harmony-services.svg)](https://github.com/Microchip-MPLAB-Harmony/harmony-services/releases/latest)
+[![Commit activity](https://img.shields.io/github/commit-activity/y/Microchip-MPLAB-Harmony/harmony-services.svg)](https://github.com/Microchip-MPLAB-Harmony/harmony-services/graphs/commit-activity)
+[![Contributors](https://img.shields.io/github/contributors-anon/Microchip-MPLAB-Harmony/harmony-services.svg)]()
 ____
 
 [![Follow us on Youtube](https://img.shields.io/badge/Youtube-Follow%20us%20on%20Youtube-red.svg)](https://www.youtube.com/user/MicrochipTechnology)
@@ -43,7 +45,5 @@ ____
 [![Follow us on Facebook](https://img.shields.io/badge/Facebook-Follow%20us%20on%20Facebook-blue.svg)](https://www.facebook.com/microchiptechnology/)
 [![Follow us on Twitter](https://img.shields.io/twitter/follow/MicrochipTech.svg?style=social)](https://twitter.com/MicrochipTech)
 
-[![](https://img.shields.io/github/stars/Microchip-MPLAB-Harmony/replaceme.svg?style=social)]()
-[![](https://img.shields.io/github/watchers/Microchip-MPLAB-Harmony/replaceme.svg?style=social)]()
-
-
+[![](https://img.shields.io/github/stars/Microchip-MPLAB-Harmony/mhc.svg?style=social)]()
+[![](https://img.shields.io/github/watchers/Microchip-MPLAB-Harmony/mhc.svg?style=social)]()
