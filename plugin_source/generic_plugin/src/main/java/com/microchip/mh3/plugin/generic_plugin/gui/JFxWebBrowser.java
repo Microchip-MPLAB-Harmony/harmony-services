@@ -173,7 +173,7 @@ public final class JFxWebBrowser extends Region {
             }
             browser.zoom().level(zoomlevelArrays[currentZoomLevelIndex]);
         } else {
-            if(currentZoomLevelIndex>=0){
+            if(currentZoomLevelIndex>0){
                 currentZoomLevelIndex--;
             }
             browser.zoom().level(zoomlevelArrays[currentZoomLevelIndex]);
