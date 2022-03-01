@@ -32,6 +32,7 @@ public class BrowserLauncher  {
     public Scene getScene(String url) {
         localHost = "http://localhost:"+System.getProperty("HARMONY_SERVER_PORT")+"/";
         browser = new JFxWebBrowser(stage, localHost + url, pluginManagerName);
+//        browser = new JFxWebBrowser(stage,"http://localhost:3000/", pluginManagerName);
         scene = new Scene(browser);
         return scene;
     }

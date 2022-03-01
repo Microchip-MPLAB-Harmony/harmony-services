@@ -67,7 +67,7 @@ public final class JFxWebBrowser extends Region {
         try {
             this.parentStage = parentStage;
             this.pluginManagerName = pluginManagerName;
-            javaConnector = new JavaConnector(pluginManagerName, parentStage);
+            javaConnector = new JavaConnector(pluginManagerName, parentStage, this);
             browserEngine = new JXbrowserEngine();
             browser = browserEngine.getBrowserInstance(pluginManagerName);
             Log.write(pluginManagerName, Log.Severity.Info, "JXBrowser user directory : " + browser.engine().options().userDataDir(), Log.Level.USER);

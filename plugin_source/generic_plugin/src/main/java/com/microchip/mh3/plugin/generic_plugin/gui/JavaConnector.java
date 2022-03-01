@@ -16,9 +16,11 @@ public final class JavaConnector {
     
     Stage parentStage;
     String pluginManagerName;
-    public JavaConnector(String pluginName, Stage parentStage){
+    JFxWebBrowser browserObject;
+    public JavaConnector(String pluginName, Stage parentStage, JFxWebBrowser browserObject){
         this.pluginManagerName = pluginName;
         this.parentStage = parentStage;
+        this.browserObject = browserObject;
     }
     
     @JsAccessible
@@ -104,5 +106,13 @@ public final class JavaConnector {
         return System.getProperty("HARMONY_SERVER_PORT");
     }
     
+    @JsAccessible
+    public void ZoomInReactCall(){
+        browserObject.ZooMInZoomOut(1);
+    }
     
+    @JsAccessible
+    public void ZoomOutReactCall(){
+        browserObject.ZooMInZoomOut(-1);
+    }
 }
