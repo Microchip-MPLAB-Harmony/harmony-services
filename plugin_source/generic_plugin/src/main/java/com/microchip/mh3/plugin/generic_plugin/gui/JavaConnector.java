@@ -57,8 +57,15 @@ public final class JavaConnector {
     }
     
     @JsAccessible
-    public void updateSymbolData(String componentId, String symbolId, Object value){
-        DatabaseAccess.setParameterValue(pluginManagerName, componentId, symbolId, value);
+    public String updateSymbolData(String componentId, String symbolId, Object value){
+        try{
+            DatabaseAccess.setParameterValue(pluginManagerName, componentId, symbolId, value);
+            return "success";
+        }catch(Exception ex){
+            Log.write(pluginManagerName, Log.Severity.Error, "Database Update failed: " + symbolId, Log.Level.USER);
+            Log.printException(ex);
+            return "failure";
+        }
     }
     
     @JsAccessible
