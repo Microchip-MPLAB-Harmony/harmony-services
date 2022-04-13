@@ -46,7 +46,6 @@ public final class JFxWebBrowser extends Region {
     
     public JXbrowserEngine  browserEngine;
     
-    public final String PREFERRED_ID = "DVMainWindow";
 
     public Browser getBrowser() {
         return browser;
@@ -54,6 +53,8 @@ public final class JFxWebBrowser extends Region {
     
     JsObject webWindow;
     Stage parentStage;
+    
+    public Frame frame;
    
     double z = 0.25;
     int nMinimumZoomFactor = 0;
@@ -72,7 +73,7 @@ public final class JFxWebBrowser extends Region {
             browser = browserEngine.getBrowserInstance(pluginManagerName);
             Log.write(pluginManagerName, Log.Severity.Info, "JXBrowser user directory : " + browser.engine().options().userDataDir(), Log.Level.USER);
             browser.set(InjectJsCallback.class, params -> {
-                Frame frame = params.frame();
+                frame = params.frame();
                 String window = "window";
                 JsObject jsObject = frame.executeJavaScript(window);
                 if (jsObject == null) {
@@ -164,6 +165,10 @@ public final class JFxWebBrowser extends Region {
 
     public Engine getWebEngine() {
         return engine;
+    }
+    
+    public Frame getFrame(){
+        return frame;
     }
     
     public void ZooMInZoomOut(double value) {
