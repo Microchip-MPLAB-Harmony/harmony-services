@@ -7,10 +7,6 @@ package com.microchip.mh3.plugin.generic_plugin.database;
 
 import com.microchip.h3.database.symbol.Symbol;
 
-/**
- *
- * @author I17764
- */
 public interface DatabaseAgent {
 
     public void addStateListener(StateChangeListener stateChangeListener);

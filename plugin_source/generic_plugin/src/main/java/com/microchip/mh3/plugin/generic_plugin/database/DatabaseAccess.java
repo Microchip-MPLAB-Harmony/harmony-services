@@ -198,6 +198,14 @@ public class DatabaseAccess {
         return "Not a ConfigTypeSymobl";
     }
     
+    public static Object getSymbolEnableStatus(String componentID, String symbolID){
+        Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
+        if(sym instanceof ConfigSymbol){
+            return ((ConfigSymbol)sym).getEnabled();
+        }
+        return "Not a ConfigTypeSymobl";
+    }
+    
     public static void clearUserSymbolValue(String componentId, String symbolID){
         Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentId, symbolID);
         if(sym instanceof ConfigSymbol){
