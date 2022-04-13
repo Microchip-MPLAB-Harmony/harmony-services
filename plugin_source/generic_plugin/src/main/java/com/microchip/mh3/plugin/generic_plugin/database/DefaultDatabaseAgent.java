@@ -57,7 +57,6 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
         if(symListenersMap.containsKey(symbol)){
             return;
         }
-        Log.write("Plugin", Log.Severity.Info, "Symbol listner added : " + symbol.getID(), Log.Level.USER);
         Set<SymbolListener> set = symListenersMap.get(symbol);
         if (set == null) {
             set = new HashSet<>();

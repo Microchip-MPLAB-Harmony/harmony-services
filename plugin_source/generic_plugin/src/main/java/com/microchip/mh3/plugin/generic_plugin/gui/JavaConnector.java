@@ -163,7 +163,7 @@ public final class JavaConnector {
            try {
                 ConfigSymbol sym = (ConfigSymbol) sy;
                 Object obj = browserObject.getFrame().executeJavaScript("SymbolValueChanged(\"" + 
-                        sym.getID() + "M*C" + sym.getValue()+ "\")");
+                        sym.getID() + "M*C" + sym.getValue()+ "M*C"+ sym.getEnabled() + "M*C" + sym.getVisible()+ "\")");
             } catch (Exception ex) {
                 Log.write(pluginManagerName, Log.Severity.Error, "Unable to excute javascript api for symbol : "+ sy.getID()+" ->" + ex, Log.Level.USER);
                 Log.printException(ex);

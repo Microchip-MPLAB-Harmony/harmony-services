@@ -55,6 +55,7 @@ public class FileServer extends Thread {
             
             server.join();
         } catch (Exception ex) {
+            Log.write("Http File Server", Log.Severity.Error, "Harmony File server failed to Start", Log.Level.USER);
             Log.printException(ex);
         }
     }

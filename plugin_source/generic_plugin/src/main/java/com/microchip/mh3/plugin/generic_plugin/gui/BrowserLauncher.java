@@ -36,7 +36,7 @@ public class BrowserLauncher  {
         scene = new Scene(browser);
         return scene;
     }
-    
+   
     public void clearObjects(){
         if(browser!=null){
             browser.clearObjects();

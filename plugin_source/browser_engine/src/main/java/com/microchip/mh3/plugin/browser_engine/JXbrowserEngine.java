@@ -6,7 +6,6 @@
 package com.microchip.mh3.plugin.browser_engine;
 
 import com.microchip.mcc.core.service.ServiceFactory;
-import com.microchip.mcc.core.service.environment.development.IDevelopmentEnvironmentService;
 import com.microchip.mh3.log.Log;
 import org.openide.util.Lookup;
 import com.teamdev.jxbrowser.browser.Browser;
@@ -64,7 +63,8 @@ public class JXbrowserEngine {
             }
             return getBrowserInstanceInMCCStandAlone();
         } catch (Exception ex) {
-            Log.write(pluginID, Log.Severity.Info, "Unable to access MPLABX API", Log.Level.USER);
+            Log.write(pluginID, Log.Severity.Error, "Unable to access MPLABX JXbrowsers APIs. Please install latest MPLAB X version.", Log.Level.USER);
+            Log.printException(ex);
             return getBrowserInstanceInMCCStandAlone();
         }
     }
@@ -131,7 +131,8 @@ public class JXbrowserEngine {
                 directory.delete();
             }
         } catch (Exception ex) {
-            //
+            Log.write("MCCHarmony", Log.Severity.Error, "Failed to delete jxbrowser temp files.", Log.Level.USER);
+            Log.printException(ex);
         }
     }
     

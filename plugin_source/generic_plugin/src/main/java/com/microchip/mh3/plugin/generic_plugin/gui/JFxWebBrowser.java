@@ -128,12 +128,13 @@ public final class JFxWebBrowser extends Region {
                 tell.ok();
             });
             
-             browser.zoom().level(zoomlevelArrays[currentZoomLevelIndex]);
+            browser.zoom().level(zoomlevelArrays[currentZoomLevelIndex]);
 
             //add components
             getChildren().add(browserView);
         } catch (Exception ex) {
             Log.write(pluginManagerName, Log.Severity.Error, "Error:  " + ex.toString(), Log.Level.USER);
+            Log.printException(ex);
         }
     }
     public static void openWebDirectory(String url){
