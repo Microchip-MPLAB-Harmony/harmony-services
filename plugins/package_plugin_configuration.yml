@@ -1,7 +1,7 @@
 packagePluginConfiguration:
 - name: Harmony File Server
   pluginID: HARMONY_FILE_SERVER
-  binaryFilePath: plugins\http_file_server.jar
+  binaryFilePath: plugins/http_file_server.jar
   typeOfPlugin: JAVA
   loadingType: IMMEDIATE
   isHeadless: false
@@ -9,7 +9,7 @@ packagePluginConfiguration:
     pluginClass: com.microchip.mh3.plugin.http_file_server.GenericPackagePlugin
 - name: JXBrowser Engine Instatnce
   pluginID: JXBROWSER_ENGINE_INSTANCE
-  binaryFilePath: plugins\browser_engine.jar
+  binaryFilePath: plugins/browser_engine.jar
   typeOfPlugin: JAVA
   loadingType: IMMEDIATE
   isHeadless: false
