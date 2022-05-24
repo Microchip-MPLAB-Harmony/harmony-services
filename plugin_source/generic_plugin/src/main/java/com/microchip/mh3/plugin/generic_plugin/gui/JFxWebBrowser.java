@@ -71,6 +71,7 @@ public final class JFxWebBrowser extends Region {
             javaConnector = new JavaConnector(pluginManagerName, parentStage, this);
             browserEngine = new JXbrowserEngine();
             browser = browserEngine.getBrowserInstance(pluginManagerName);
+//            Log.write(pluginManagerName, Log.Severity.Info, "JXBrowser remote de-bugging port : " +browser.engine().options().remoteDebuggingPort(), Log.Level.USER);
             Log.write(pluginManagerName, Log.Severity.Info, "JXBrowser user directory : " + browser.engine().options().userDataDir(), Log.Level.USER);
             browser.set(InjectJsCallback.class, params -> {
                 frame = params.frame();
@@ -198,6 +199,11 @@ public final class JFxWebBrowser extends Region {
     
     public void clearObjects() {
         try {
+            if(javaConnector!=null){
+                javaConnector.clearJavaConnectorObjects();
+                javaConnector = null;
+            }
+            
             if(browser!=null){
                 browser.close();
                 browserEngine.disPoseBrowserEvent(pluginManagerName);

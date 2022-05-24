@@ -5,8 +5,10 @@
  */
 package com.microchip.mh3.plugin.generic_plugin.database;
 
+import com.microchip.h3.database.symbol.Symbol;
+
 
 @FunctionalInterface
 public interface StateChangeListener {
-    public void stateChanged();
+    public void stateChanged(Symbol symbol);
 }

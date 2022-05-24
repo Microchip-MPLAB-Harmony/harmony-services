@@ -198,10 +198,10 @@ public class DatabaseAccess {
         return "Not a ConfigTypeSymbol";
     }
     
-    public static Object getSymbolEnableStatus(String componentID, String symbolID){
+    public static Object getSymbolReadOnlyStatus(String componentID, String symbolID){
         Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
         if(sym instanceof ConfigSymbol){
-            return ((ConfigSymbol)sym).getEnabled();
+            return ((ConfigSymbol)sym).getReadOnly();
         }
         return "Not a ConfigTypeSymbol";
     }

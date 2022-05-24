@@ -7,11 +7,16 @@ package com.microchip.mh3.plugin.generic_plugin.gui;
 
 import com.microchip.h3.database.symbol.ConfigSymbol;
 import com.microchip.h3.database.symbol.Symbol;
+import com.microchip.mh3.environment.Environment;
 import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.database.DatabaseAccess;
 import com.microchip.mh3.plugin.generic_plugin.database.DefaultDatabaseAgent;
-import com.microchip.mh3.plugin.generic_plugin.database.SymbolListener;
 import com.teamdev.jxbrowser.js.JsAccessible;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javafx.stage.Stage;
 
 @JsAccessible
@@ -22,11 +27,18 @@ public final class JavaConnector {
     JFxWebBrowser browserObject;
     DefaultDatabaseAgent agent;
 
+    String recentSymbolUpdatedByReact = "";
+
+    Set<String> symbolListenersList = new HashSet<>();
+
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
+
     public JavaConnector(String pluginName, Stage parentStage, JFxWebBrowser browserObject) {
         this.pluginManagerName = pluginName;
         this.parentStage = parentStage;
         this.browserObject = browserObject;
         agent = new DefaultDatabaseAgent();
+        agent.addStateListener(this::stateChanged);
     }
 
     @JsAccessible
@@ -68,14 +80,13 @@ public final class JavaConnector {
     }
 
     @JsAccessible
-    public String updateSymbolData(String componentId, String symbolId, Object value) {
+    public void updateSymbolData(String componentId, String symbolId, Object value) {
         try {
+            recentSymbolUpdatedByReact = symbolId;
             DatabaseAccess.setParameterValue(pluginManagerName, componentId, symbolId, value);
-            return "success";
         } catch (Exception ex) {
             Log.write(pluginManagerName, Log.Severity.Error, "Database Update failed: " + symbolId, Log.Level.USER);
             Log.printException(ex);
-            return "failure";
         }
     }
 
@@ -105,27 +116,15 @@ public final class JavaConnector {
     }
 
     @JsAccessible
-    public Object getSymbolEnableStatus(String stComponent, String symbolID) {
-        return DatabaseAccess.getSymbolEnableStatus(stComponent, symbolID);
+    public Object getSymbolReadOnlyStatus(String stComponent, String symbolID) {
+        return DatabaseAccess.getSymbolReadOnlyStatus(stComponent, symbolID);
     }
 
     @JsAccessible
     public void addSymbolListener(String symbolId) {
-        agent.addSymbolListener(agent.getSymbolByID(symbolId), this::symbolChagned);
-    }
-
-    @JsAccessible
-    public void addSymbolsListener(Symbol[] symbols, SymbolListener l) {
-
-    }
-
-    @JsAccessible
-    public void removeSymbolListener(Symbol symbol, SymbolListener l) {
-
-    }
-
-    public void removeSymbolsListener(Symbol[] symbols, SymbolListener l) {
-
+        if (!symbolListenersList.contains(symbolId)) {
+            symbolListenersList.add(symbolId);
+        }
     }
 
     @JsAccessible
@@ -158,16 +157,41 @@ public final class JavaConnector {
         browserObject.ZooMInZoomOut(-1);
     }
 
-    public void symbolChagned(Symbol sy) {
-        new Thread(() -> {
-           try {
+    @JsAccessible
+    public boolean IsTrustZoneSupported() {
+        return Environment.isTrustzoneEnabled();
+    }
+
+    public void stateChanged(Symbol sy) {
+        if (!symbolListenersList.contains(sy.getID())) {
+            return;
+        }
+        if (recentSymbolUpdatedByReact.equals(sy.getID())) {
+            recentSymbolUpdatedByReact = "";
+            return;
+        }
+        executorService.execute(() -> {
+            try {
                 ConfigSymbol sym = (ConfigSymbol) sy;
-                Object obj = browserObject.getFrame().executeJavaScript("SymbolValueChanged(\"" + 
-                        sym.getID() + "M*C" + sym.getValue()+ "M*C"+ sym.getEnabled() + "M*C" + sym.getVisible()+ "\")");
+                Object symbolValue = DatabaseAccess.getParameterValue(sym.getComponent().getID(), sym.getID());
+                Object obj = browserObject.getFrame().executeJavaScript("SymbolValueChanged(\""
+                        + sym.getID() + "M*C" + symbolValue + "M*C" + sym.getReadOnly() + "M*C" + sym.getVisible() + "\")");
             } catch (Exception ex) {
-                Log.write(pluginManagerName, Log.Severity.Error, "Unable to excute javascript api for symbol : "+ sy.getID()+" ->" + ex, Log.Level.USER);
+                Log.write(pluginManagerName, Log.Severity.Error, "Unable to excute javascript api for symbol : " + sy.getID() + " ->" + ex, Log.Level.USER);
                 Log.printException(ex);
             }
-        }).start();
+        });
+    }
+
+    public void clearJavaConnectorObjects() {
+        executorService.shutdownNow();
+        try {
+            executorService.awaitTermination(30, TimeUnit.SECONDS);
+        } catch (InterruptedException ie) {
+            Log.write(pluginManagerName, Log.Severity.Error, "Unable to terminate excutorService thread.", Log.Level.USER);
+            Log.printException(ie);
+            executorService.shutdownNow();
+        }
+        executorService = null;
     }
 }
