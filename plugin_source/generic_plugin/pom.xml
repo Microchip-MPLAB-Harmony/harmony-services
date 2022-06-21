@@ -23,7 +23,7 @@
             <artifactId>Harmony3Library</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${env.USER_HOME_DIR}/.mcc/libraries/Harmony3Library_v1.1.0/Harmony3Library.jar</systemPath>
+            <systemPath>${user.home}/.mcc/libraries/Harmony3Library_v1.1.1/Harmony3Library.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>jxbrowser</groupId>

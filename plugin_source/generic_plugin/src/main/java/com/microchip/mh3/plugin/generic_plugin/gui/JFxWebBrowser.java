@@ -14,8 +14,10 @@ import com.teamdev.jxbrowser.browser.callback.CreatePopupCallback;
 import com.teamdev.jxbrowser.browser.callback.InjectJsCallback;
 import com.teamdev.jxbrowser.browser.callback.input.MoveMouseWheelCallback;
 import com.teamdev.jxbrowser.browser.callback.input.PressKeyCallback;
+import com.teamdev.jxbrowser.browser.event.ConsoleMessageReceived;
 import com.teamdev.jxbrowser.engine.Engine;
 import com.teamdev.jxbrowser.frame.Frame;
+import com.teamdev.jxbrowser.js.ConsoleMessage;
 import com.teamdev.jxbrowser.js.JsObject;
 import com.teamdev.jxbrowser.ui.event.KeyPressed;
 import com.teamdev.jxbrowser.ui.event.MouseWheel;
@@ -131,6 +133,8 @@ public final class JFxWebBrowser extends Region {
             
             browser.zoom().level(zoomlevelArrays[currentZoomLevelIndex]);
 
+            browser.on(ConsoleMessageReceived.class, this::log);
+
             //add components
             getChildren().add(browserView);
         } catch (Exception ex) {
@@ -138,6 +142,36 @@ public final class JFxWebBrowser extends Region {
             Log.printException(ex);
         }
     }
+
+    private void log(ConsoleMessageReceived event) {
+        ConsoleMessage consoleMessage = event.consoleMessage();
+
+        final String MARKER = "[MH3]";
+        String message = consoleMessage.message();
+        Log.Level harmonyLogLevel = Log.Level.DEBUG;
+        if (message.startsWith(MARKER)) {
+            message = message.substring(MARKER.length());
+            harmonyLogLevel = Log.Level.USER;
+        }
+
+        switch(consoleMessage.level()) {
+            case CONSOLE_MESSAGE_LEVEL_UNSPECIFIED:     // 0
+            case DEBUG:         // 1
+            case LOG:           // 2
+                Log.write(pluginManagerName, Log.Severity.Info, message, harmonyLogLevel);
+                return;
+            case WARNING:       // 3
+                Log.write(pluginManagerName, Log.Severity.Warning, message, harmonyLogLevel);
+                return;
+            case LEVEL_ERROR:   // 4
+            case VERBOSE:       // 5
+                Log.write(pluginManagerName, Log.Severity.Error, message, harmonyLogLevel);
+                return;
+            default:
+                return;
+        }
+    }
+
     public static void openWebDirectory(String url){
         new Thread(() -> {
             try {
