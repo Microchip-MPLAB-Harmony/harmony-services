@@ -44,7 +44,7 @@ public final class JFxWebBrowser extends Region {
     private  Engine engine = null ;
     private  BrowserView browserView;
     private  Browser browser;
-    private String pluginManagerName;
+    private final HtmlPluginConfig pluginConfig;
     
     public JXbrowserEngine  browserEngine;
     
@@ -66,15 +66,15 @@ public final class JFxWebBrowser extends Region {
         ZoomLevel.P_110, ZoomLevel.P_125,  ZoomLevel.P_150, ZoomLevel.P_175, ZoomLevel.P_200};
     int currentZoomLevelIndex = 3;
 
-    public JFxWebBrowser(Stage parentStage, String url, String pluginManagerName) {
+    public JFxWebBrowser(Stage parentStage, String url, HtmlPluginConfig pluginConfig) {
+        this.pluginConfig = pluginConfig;
         try {
             this.parentStage = parentStage;
-            this.pluginManagerName = pluginManagerName;
-            javaConnector = new JavaConnector(pluginManagerName, parentStage, this);
+            javaConnector = new JavaConnector(pluginConfig, parentStage, this);
             browserEngine = new JXbrowserEngine();
-            browser = browserEngine.getBrowserInstance(pluginManagerName);
+            browser = browserEngine.getBrowserInstance(pluginConfig.pluginName());
 //            Log.write(pluginManagerName, Log.Severity.Info, "JXBrowser remote de-bugging port : " +browser.engine().options().remoteDebuggingPort(), Log.Level.USER);
-            Log.write(pluginManagerName, Log.Severity.Info, "JXBrowser user directory : " + browser.engine().options().userDataDir(), Log.Level.USER);
+            Log.write(pluginConfig.pluginName(), Log.Severity.Info, "JXBrowser user directory : " + browser.engine().options().userDataDir(), Log.Level.USER);
             browser.set(InjectJsCallback.class, params -> {
                 frame = params.frame();
                 String window = "window";
@@ -84,6 +84,7 @@ public final class JFxWebBrowser extends Region {
                             format("'%s' JS object not found", window));
                 }
                 jsObject.putProperty("javaConnector", javaConnector);
+                jsObject.putProperty("pluginConfig", pluginConfig);
                 return InjectJsCallback.Response.proceed();
             });
 
@@ -110,7 +111,7 @@ public final class JFxWebBrowser extends Region {
                 return CreatePopupCallback.Response.suppress();
             });
 
-            addStageListners();
+//            addStageListners();
 
             Platform.runLater(() -> {
                 browser.navigation().loadUrl(url);
@@ -124,10 +125,10 @@ public final class JFxWebBrowser extends Region {
                 String okActionText = params.okActionText();
                 System.out.println(message);
                 if(message.startsWith("Missing_Symbol:")){
-                    Log.write(pluginManagerName, Log.Severity.Error, "The following symbol id is missing : "
+                    Log.write(pluginConfig.pluginName(), Log.Severity.Error, "The following symbol id is missing : "
                             + ""+ message.replaceAll("Missing_Symbol:", ""), Log.Level.USER);
                 }
-                Log.write(pluginManagerName, Log.Severity.Info, message, Log.Level.USER);
+                Log.write(pluginConfig.pluginName(), Log.Severity.Info, message, Log.Level.USER);
                 tell.ok();
             });
             
@@ -138,7 +139,7 @@ public final class JFxWebBrowser extends Region {
             //add components
             getChildren().add(browserView);
         } catch (Exception ex) {
-            Log.write(pluginManagerName, Log.Severity.Error, "Error:  " + ex.toString(), Log.Level.USER);
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Error:  " + ex.toString(), Log.Level.USER);
             Log.printException(ex);
         }
     }
@@ -158,14 +159,14 @@ public final class JFxWebBrowser extends Region {
             case CONSOLE_MESSAGE_LEVEL_UNSPECIFIED:     // 0
             case DEBUG:         // 1
             case LOG:           // 2
-                Log.write(pluginManagerName, Log.Severity.Info, message, harmonyLogLevel);
+                Log.write(pluginConfig.pluginName(), Log.Severity.Info, message, harmonyLogLevel);
                 return;
             case WARNING:       // 3
-                Log.write(pluginManagerName, Log.Severity.Warning, message, harmonyLogLevel);
+                Log.write(pluginConfig.pluginName(), Log.Severity.Warning, message, harmonyLogLevel);
                 return;
             case LEVEL_ERROR:   // 4
             case VERBOSE:       // 5
-                Log.write(pluginManagerName, Log.Severity.Error, message, harmonyLogLevel);
+                Log.write(pluginConfig.pluginName(), Log.Severity.Error, message, harmonyLogLevel);
                 return;
             default:
                 return;
@@ -221,15 +222,15 @@ public final class JFxWebBrowser extends Region {
         }
     }
     
-    private void addStageListners(){
-        parentStage.widthProperty().addListener((obs, oldVal, newVal) -> {
-            ZooMInZoomOut(newVal.doubleValue()- oldVal.doubleValue());
-        });
-
-        parentStage.heightProperty().addListener((obs, oldVal, newVal) -> {
-             ZooMInZoomOut(newVal.doubleValue()- oldVal.doubleValue());
-        });
-    }
+//    private void addStageListners(){
+//        parentStage.widthProperty().addListener((obs, oldVal, newVal) -> {
+//            ZooMInZoomOut(newVal.doubleValue()- oldVal.doubleValue());
+//        });
+//
+//        parentStage.heightProperty().addListener((obs, oldVal, newVal) -> {
+//             ZooMInZoomOut(newVal.doubleValue()- oldVal.doubleValue());
+//        });
+//    }
     
     public void clearObjects() {
         try {
@@ -240,7 +241,7 @@ public final class JFxWebBrowser extends Region {
             
             if(browser!=null){
                 browser.close();
-                browserEngine.disPoseBrowserEvent(pluginManagerName);
+                browserEngine.disPoseBrowserEvent(pluginConfig.pluginName());
                 browserEngine.removeUsedUserDirectory(browser.engine().options().userDataDir());
                 browserEngine = null;
                 browser = null;
@@ -251,7 +252,7 @@ public final class JFxWebBrowser extends Region {
                 browserView = null;
             }
         } catch (Exception ex) {
-            Log.write(pluginManagerName, Log.Severity.Error, "Unable to clear browser objects", Log.Level.USER);
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Unable to clear browser objects", Log.Level.USER);
             Log.printException(ex);
         }
 

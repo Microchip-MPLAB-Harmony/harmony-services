@@ -4,6 +4,7 @@ import com.microchip.h3.database.component.ComponentPluginConfiguration;
 import com.microchip.mh3.Core;
 import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.gui.BrowserLauncher;
+import com.microchip.mh3.plugin.generic_plugin.gui.HtmlPluginConfig;
 import com.microchip.mh3.plugin.generic_plugin.javafx.FxSupport;
 import com.microchip.mh3.windowmanager.WindowManager;
 import java.awt.event.ActionEvent;
@@ -18,10 +19,8 @@ public class LaunchPlugin  {
     private Path pluginJarPath = null;
     private JMenuItem menuItem = null;
     
-    public Map<String, Object> settingsMap;
-    public String pluginManagerName;
+    private HtmlPluginConfig pluginConfig;
     public String pluginVersion;
-    public String mainHtmlPath;
     
     public BrowserLauncher browserLauncher;
 
@@ -31,7 +30,7 @@ public class LaunchPlugin  {
 
 
     public String getName() {
-        return pluginManagerName;
+        return pluginConfig.pluginName();
     }
 
     public String getVersion() {
@@ -40,8 +39,8 @@ public class LaunchPlugin  {
 
 
     private void logError(){
-        Log.write(pluginManagerName, Log.Severity.Warning, 
-                        "Failed to open "+pluginManagerName+". Load plugin before opening "+pluginManagerName, Log.Level.DEBUG);
+        Log.write(pluginConfig.pluginName(), Log.Severity.Warning, 
+                        "Failed to open "+pluginConfig.pluginName()+". Load plugin before opening "+pluginConfig.pluginName(), Log.Level.DEBUG);
     }
 
     public void handleComponentActivation(ComponentPluginConfiguration cpc) {
@@ -49,26 +48,26 @@ public class LaunchPlugin  {
             return;
         }
         FxSupport.enable();
-        pluginManagerName = (String)cpc.getArgs().get("plugin_name");
-        mainHtmlPath = (String)cpc.getArgs().get("main_html_path");
-        createLoadBrowserObject(pluginManagerName, mainHtmlPath);
-        menuItem = new JMenuItem(pluginManagerName);
+        
+        this.pluginConfig = new HtmlPluginConfig(cpc);
+        createLoadBrowserObject(this.pluginConfig);
+        menuItem = new JMenuItem(pluginConfig.pluginName());
         menuItem.addActionListener(this::openManagerAsWindow);
         WindowManager.getInstance().addPluginLauncher(menuItem);
         
         this.pluginJarPath = Paths.get(cpc.getJarPath());
 
-        Log.write(pluginManagerName, Log.Severity.Info, "Jar Path:  " + pluginJarPath, Log.Level.USER);
+        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "Jar Path:  " + pluginJarPath, Log.Level.USER);
 
         Log.write("Generic HTML Path", Log.Severity.Info, "Main HTML path for "
-                + "\"" + pluginManagerName + "\" : " + mainHtmlPath, Log.Level.USER);
+                + "\"" + pluginConfig.pluginName() + "\" : " + pluginConfig.mainHtmlPath(), Log.Level.USER);
 
-        Log.write(pluginManagerName, Log.Severity.Info, "loading " + pluginManagerName + " plugin", Log.Level.USER);
+        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "loading " + pluginConfig.pluginName() + " plugin", Log.Level.USER);
     }
     
-    private void createLoadBrowserObject(String pluginManagerName, String mainHtmlPath){
+    private void createLoadBrowserObject(HtmlPluginConfig pluginConfig){
         Platform.runLater(() -> {
-            browserLauncher = new BrowserLauncher(pluginManagerName, mainHtmlPath);
+            browserLauncher = new BrowserLauncher(pluginConfig);
         });
     }
     
@@ -91,6 +90,6 @@ public class LaunchPlugin  {
 
         WindowManager.getInstance().removePluginLauncher(menuItem);
 
-        Log.write(pluginManagerName, Log.Severity.Info, "unloading "+pluginManagerName+" plugin", Log.Level.USER);
+        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "unloading "+pluginConfig.pluginName()+" plugin", Log.Level.USER);
     }
 }

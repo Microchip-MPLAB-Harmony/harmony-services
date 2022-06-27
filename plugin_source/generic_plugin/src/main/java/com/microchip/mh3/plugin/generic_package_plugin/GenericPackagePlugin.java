@@ -3,6 +3,7 @@ package com.microchip.mh3.plugin.generic_package_plugin;
 import com.microchip.mh3.Core;
 import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.gui.BrowserLauncher;
+import com.microchip.mh3.plugin.generic_plugin.gui.HtmlPluginConfig;
 import com.microchip.mh3.plugin.generic_plugin.javafx.FxSupport;
 import com.microchip.mh3.plugin.packageplugin.PackagePlugin;
 import com.microchip.mh3.plugin.packageplugin.PackagePluginManager;
@@ -15,10 +16,8 @@ public class GenericPackagePlugin implements PackagePlugin {
 
     private Path pluginJarPath = null;
 
-    public Map<String, Object> settingsMap;
-    public String pluginManagerName = "";
     public String pluginVersion = "";
-    public String mainHtmlPath;
+    private HtmlPluginConfig pluginConfig;
 
     public String COMPONENT_ID;
 
@@ -29,7 +28,7 @@ public class GenericPackagePlugin implements PackagePlugin {
 
     @Override
     public String getName() {
-        return pluginManagerName;
+        return pluginConfig.pluginName();
     }
 
     @Override
@@ -63,28 +62,27 @@ public class GenericPackagePlugin implements PackagePlugin {
         this.pluginConfiguration = pc;
         FxSupport.enable();
         
-        pluginManagerName = (String) pluginConfiguration.getName();
-        mainHtmlPath = (String) pluginConfiguration.getInitArgs().get("main_html_path");
-        createLoadBrowserObject(pluginManagerName, mainHtmlPath);
+        this.pluginConfig = new HtmlPluginConfig(pc);
+        createLoadBrowserObject(pluginConfig);
 
-        Log.write(pluginManagerName, Log.Severity.Info, "initialize " + pluginManagerName + " plugin", Log.Level.USER);
+        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "initialize " + pluginConfig.pluginName() + " plugin", Log.Level.USER);
 
         this.pluginJarPath = pluginConfiguration.getPackagePath().resolve(pluginConfiguration.getBinaryFilePath());
 
-        Log.write(pluginManagerName, Log.Severity.Info, "Jar Path:  " + pluginJarPath, Log.Level.USER);
+        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "Jar Path:  " + pluginJarPath, Log.Level.USER);
 
-        deregister = PackagePluginManager.singleton().registerMenuItem(this, pluginManagerName, this::openManagerAsWindow);
+        deregister = PackagePluginManager.singleton().registerMenuItem(this, pluginConfig.pluginName(), this::openManagerAsWindow);
 
         Log.write("Generic HTML Path", Log.Severity.Info, "Main HTML path for "
-                + "\"" + pluginManagerName + "\" : " + mainHtmlPath, Log.Level.USER);
+                + "\"" + pluginConfig.pluginName() + "\" : " + pluginConfig.mainHtmlPath(), Log.Level.USER);
 
-        Log.write(pluginManagerName, Log.Severity.Info, "loading " + pluginManagerName + " plugin", Log.Level.USER);
+        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "loading " + pluginConfig.pluginName() + " plugin", Log.Level.USER);
         return true;
     }
     
-    private void createLoadBrowserObject(String pluginManagerName, String mainHtmlPath){
+    private void createLoadBrowserObject(HtmlPluginConfig pluginConfig){
         Platform.runLater(() -> {
-            browserLauncher = new BrowserLauncher(pluginManagerName, mainHtmlPath);
+            browserLauncher = new BrowserLauncher(pluginConfig);
         });
     }
 
@@ -101,7 +99,7 @@ public class GenericPackagePlugin implements PackagePlugin {
                 browserLauncher = null;
             }
         });
-        Log.write(pluginManagerName, Log.Severity.Info, "unloading " + pluginManagerName + " plugin", Log.Level.USER);
+        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "unloading " + pluginConfig.pluginName() + " plugin", Log.Level.USER);
         System.gc();
         return true;
     }

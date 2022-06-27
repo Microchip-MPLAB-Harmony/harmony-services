@@ -7,6 +7,7 @@ package com.microchip.mh3.plugin.generic_plugin.database;
 
 import com.microchip.h3.database.ComponentManager;
 import com.microchip.h3.database.DatabaseEvents.SymbolValueChangedEvent;
+import com.microchip.h3.database.DatabaseEvents.SymbolVisualChangedEvent;
 import com.microchip.h3.database.component.FrameworkComponent;
 import com.microchip.h3.database.symbol.Symbol;
 import com.microchip.mh3.database.Database;
@@ -56,7 +57,7 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
     
     class GlobalSymbolEventHandler implements EventHandler {
         
-        private final Class[] FILTER = {SymbolValueChangedEvent.class};
+        private final Class[] FILTER = {SymbolValueChangedEvent.class, SymbolVisualChangedEvent.class};
         
         @Override
         public Class<?>[] getEventFilters() {
@@ -72,6 +73,9 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
         public void handleEvent(Event evt) throws Exception {
             if (evt instanceof SymbolValueChangedEvent) {
                 Symbol s = ((SymbolValueChangedEvent) evt).sym;
+                notifySymbolChanged(s);
+            } else if (evt instanceof SymbolVisualChangedEvent) {
+                Symbol s = ((SymbolVisualChangedEvent) evt).sym;
                 notifySymbolChanged(s);
             }
         }

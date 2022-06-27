@@ -16,23 +16,21 @@ import javafx.stage.WindowEvent;
 public class BrowserLauncher  {
     
     Scene scene;
-    public String pluginManagerName;
-    public String mainHtmlPath;
+    private final HtmlPluginConfig pluginConfig;
     
     JFxWebBrowser browser;
     public Stage stage = null;
     
     public String localHost;
    
-    public BrowserLauncher(String pluginName, String mainHtmlPath){
-        this.pluginManagerName = pluginName;
-        this.mainHtmlPath = mainHtmlPath;
+    public BrowserLauncher(HtmlPluginConfig pluginConfig){
+        this.pluginConfig = pluginConfig;
     }
 
     public Scene getScene(String url) {
         localHost = "http://localhost:"+System.getProperty("HARMONY_SERVER_PORT")+"/";
-        browser = new JFxWebBrowser(stage, localHost + url, pluginManagerName);
-//        browser = new JFxWebBrowser(stage,"http://localhost:3000/", pluginManagerName);
+        browser = new JFxWebBrowser(stage, localHost + url, this.pluginConfig);
+//        browser = new JFxWebBrowser(stage,"http://localhost:3000/", this.pluginConfig);
         scene = new Scene(browser);
         return scene;
     }
@@ -55,8 +53,8 @@ public class BrowserLauncher  {
         try {
             if (stage == null) {
                 stage = new Stage();
-                stage.setScene(getScene(mainHtmlPath));
-                stage.setTitle(pluginManagerName);
+                stage.setScene(getScene(pluginConfig.mainHtmlPath()));
+                stage.setTitle(pluginConfig.pluginName());
                 stage.setMaximized(true);
                 stage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, e -> {
                     clearObjects();
@@ -66,14 +64,14 @@ public class BrowserLauncher  {
             stage.show();
             stage.toFront();
         } catch (Exception ex) {
-            Log.write(pluginManagerName, Log.Severity.Error, "Unable to create stage ", Log.Level.USER);
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Unable to create stage ", Log.Level.USER);
             Log.printException(ex);
             logError();
         }
     }
     
      private void logError() {
-        Log.write(pluginManagerName, Log.Severity.Warning,
-                "Failed to open " + pluginManagerName + ". Load plugin before opening " + pluginManagerName, Log.Level.DEBUG);
+        Log.write(pluginConfig.pluginName(), Log.Severity.Warning,
+                "Failed to open " + pluginConfig.pluginName() + ". Load plugin before opening " + pluginConfig.pluginName(), Log.Level.DEBUG);
     }
 }

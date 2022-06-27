@@ -21,9 +21,10 @@ import javafx.stage.Stage;
 
 @JsAccessible
 public final class JavaConnector {
+    
+    private final HtmlPluginConfig pluginConfig;
 
     Stage parentStage;
-    String pluginManagerName;
     JFxWebBrowser browserObject;
     DefaultDatabaseAgent agent;
 
@@ -33,8 +34,8 @@ public final class JavaConnector {
 
     ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    public JavaConnector(String pluginName, Stage parentStage, JFxWebBrowser browserObject) {
-        this.pluginManagerName = pluginName;
+    public JavaConnector(HtmlPluginConfig pluginConfig, Stage parentStage, JFxWebBrowser browserObject) {
+        this.pluginConfig = pluginConfig;
         this.parentStage = parentStage;
         this.browserObject = browserObject;
         agent = new DefaultDatabaseAgent();
@@ -52,7 +53,7 @@ public final class JavaConnector {
             String symbolValue = DatabaseAccess.getParameterValue(componentId, symbolId).toString();
             return symbolValue;
         } catch (Exception e) {
-            Log.write(pluginManagerName, Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
             Log.printException(e);
         }
         return null;
@@ -73,7 +74,7 @@ public final class JavaConnector {
 //            System.out.println(joined);
             return builder.toString();
         } catch (Exception e) {
-            Log.write(pluginManagerName, Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
             Log.printException(e);
         }
         return null;
@@ -83,9 +84,9 @@ public final class JavaConnector {
     public void updateSymbolData(String componentId, String symbolId, Object value) {
         try {
             recentSymbolUpdatedByReact = symbolId;
-            DatabaseAccess.setParameterValue(pluginManagerName, componentId, symbolId, value);
+            DatabaseAccess.setParameterValue(pluginConfig.pluginName(), componentId, symbolId, value);
         } catch (Exception ex) {
-            Log.write(pluginManagerName, Log.Severity.Error, "Database Update failed: " + symbolId, Log.Level.USER);
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Database Update failed: " + symbolId, Log.Level.USER);
             Log.printException(ex);
         }
     }
@@ -177,7 +178,7 @@ public final class JavaConnector {
                 Object obj = browserObject.getFrame().executeJavaScript("SymbolValueChanged(\""
                         + sym.getID() + "M*C" + symbolValue + "M*C" + sym.getReadOnly() + "M*C" + sym.getVisible() + "\")");
             } catch (Exception ex) {
-                Log.write(pluginManagerName, Log.Severity.Error, "Unable to excute javascript api for symbol : " + sy.getID() + " ->" + ex, Log.Level.USER);
+                Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Unable to excute javascript api for symbol : " + sy.getID() + " ->" + ex, Log.Level.USER);
                 Log.printException(ex);
             }
         });
@@ -188,7 +189,7 @@ public final class JavaConnector {
         try {
             executorService.awaitTermination(30, TimeUnit.SECONDS);
         } catch (InterruptedException ie) {
-            Log.write(pluginManagerName, Log.Severity.Error, "Unable to terminate excutorService thread.", Log.Level.USER);
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Unable to terminate excutorService thread.", Log.Level.USER);
             Log.printException(ie);
             executorService.shutdownNow();
         }
