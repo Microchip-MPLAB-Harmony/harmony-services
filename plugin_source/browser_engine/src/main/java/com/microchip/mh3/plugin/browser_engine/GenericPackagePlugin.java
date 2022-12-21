@@ -17,7 +17,6 @@ public class GenericPackagePlugin implements PackagePlugin {
 
     public static String COMPONENT_ID ;
     
-    
     private PluginConfiguration pluginConfiguration;
      private Runnable deregister;
 
@@ -31,12 +30,10 @@ public class GenericPackagePlugin implements PackagePlugin {
         return pluginVersion;
     }
 
-
     private void logError(){
         Log.write(pluginManagerName, Log.Severity.Warning, 
                         "Failed to open "+pluginManagerName+". Load plugin before opening "+pluginManagerName, Log.Level.DEBUG);
     }
-
 
     @Override
     public boolean canUse() {
@@ -67,7 +64,7 @@ public class GenericPackagePlugin implements PackagePlugin {
         Log.write(pluginManagerName, Log.Severity.Info, "loading "+ pluginManagerName +" plugin", Log.Level.USER);
         return true;
     }
-
+    
     @Override
     public boolean close() {
         if (Core.getInstance().getType() == Core.Type.Headless) {

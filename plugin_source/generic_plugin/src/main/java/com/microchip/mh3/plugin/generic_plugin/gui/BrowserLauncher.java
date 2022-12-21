@@ -28,9 +28,12 @@ public class BrowserLauncher  {
     }
 
     public Scene getScene(String url) {
-        localHost = "http://localhost:"+System.getProperty("HARMONY_SERVER_PORT")+"/";
-        browser = new JFxWebBrowser(stage, localHost + url, this.pluginConfig);
-//        browser = new JFxWebBrowser(stage,"http://localhost:3000/", this.pluginConfig);
+        if(this.pluginConfig.localServerEnabled()){
+            browser = new JFxWebBrowser(stage,"http://localhost:3000/", this.pluginConfig);
+        }else{
+            localHost = "http://localhost:"+System.getProperty("HARMONY_SERVER_PORT")+"/";
+            browser = new JFxWebBrowser(stage, localHost + url, this.pluginConfig);
+        }
         scene = new Scene(browser);
         return scene;
     }

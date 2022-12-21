@@ -16,7 +16,7 @@
             <artifactId>Harmony3Library</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${env.USER_HOME_DIR}/.mcc/libraries/Harmony3Library_v1.0.8/Harmony3Library.jar</systemPath>
+            <systemPath>${env.USER_HOME_DIR}/.mcc/libraries/Harmony3Library_v1.1.5/Harmony3Library.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>MccCore</groupId>

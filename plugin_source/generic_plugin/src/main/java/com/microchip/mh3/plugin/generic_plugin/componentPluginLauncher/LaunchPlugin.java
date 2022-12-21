@@ -10,7 +10,6 @@ import com.microchip.mh3.windowmanager.WindowManager;
 import java.awt.event.ActionEvent;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 import javafx.application.Platform;
 import javax.swing.JMenuItem;
 
@@ -50,6 +49,9 @@ public class LaunchPlugin  {
         FxSupport.enable();
         
         this.pluginConfig = new HtmlPluginConfig(cpc);
+        
+        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "initialize " + pluginConfig.pluginName() + " plugin", Log.Level.USER);
+        
         createLoadBrowserObject(this.pluginConfig);
         menuItem = new JMenuItem(pluginConfig.pluginName());
         menuItem.addActionListener(this::openManagerAsWindow);
@@ -57,12 +59,8 @@ public class LaunchPlugin  {
         
         this.pluginJarPath = Paths.get(cpc.getJarPath());
 
-        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "Jar Path:  " + pluginJarPath, Log.Level.USER);
-
-        Log.write("Generic HTML Path", Log.Severity.Info, "Main HTML path for "
+        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "Main HTML path for "
                 + "\"" + pluginConfig.pluginName() + "\" : " + pluginConfig.mainHtmlPath(), Log.Level.USER);
-
-        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "loading " + pluginConfig.pluginName() + " plugin", Log.Level.USER);
     }
     
     private void createLoadBrowserObject(HtmlPluginConfig pluginConfig){

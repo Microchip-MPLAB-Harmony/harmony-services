@@ -53,6 +53,7 @@ public class GenericPackagePlugin implements PackagePlugin {
         return "";
     }
 
+     
     @Override
     public boolean initialize(PluginConfiguration pc) {
         if (Core.getInstance().getType() == Core.Type.Headless) {
@@ -64,19 +65,15 @@ public class GenericPackagePlugin implements PackagePlugin {
         
         this.pluginConfig = new HtmlPluginConfig(pc);
         createLoadBrowserObject(pluginConfig);
-
+        
         Log.write(pluginConfig.pluginName(), Log.Severity.Info, "initialize " + pluginConfig.pluginName() + " plugin", Log.Level.USER);
 
         this.pluginJarPath = pluginConfiguration.getPackagePath().resolve(pluginConfiguration.getBinaryFilePath());
 
-        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "Jar Path:  " + pluginJarPath, Log.Level.USER);
-
         deregister = PackagePluginManager.singleton().registerMenuItem(this, pluginConfig.pluginName(), this::openManagerAsWindow);
 
-        Log.write("Generic HTML Path", Log.Severity.Info, "Main HTML path for "
+        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "Main HTML path for "
                 + "\"" + pluginConfig.pluginName() + "\" : " + pluginConfig.mainHtmlPath(), Log.Level.USER);
-
-        Log.write(pluginConfig.pluginName(), Log.Severity.Info, "loading " + pluginConfig.pluginName() + " plugin", Log.Level.USER);
         return true;
     }
     

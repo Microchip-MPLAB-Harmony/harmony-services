@@ -47,25 +47,42 @@ public class JXbrowserEngine {
         return path;
     }
 
-    public Browser getBrowserInstance(String pluginID) {
+    private int getDebugPort() {
+        return 9222;
+    }
+
+    public Browser getBrowserInstance(String pluginID, boolean bDebugStatus) {
         try {
             if (ServiceFactory.getDevelopementEnvironmentService().isPresent()) {
                 BrowserService svc = Lookup.getDefault().lookup(BrowserService.class);
+
                 if (svc != null) {
                     folderName = ".jxbrowser_mplabx";
                     Path path = getPath();
                     IsMPLABXMode = true;
-                    return svc.getBrowser(pluginID, path, Optional.of((event, browser) -> {
-                        Log.write("JXBrowser", Log.Severity.Error, "Browser {0} crashed for reason {1}", Log.Level.USER);
-                    }));
+                    if (bDebugStatus) {
+                        EngineOptions.Builder builder = EngineOptions.newBuilder(RenderingMode.HARDWARE_ACCELERATED)
+                                // The language used on the default error pages and GUI.
+                                .language(Language.ENGLISH_US)
+                                .remoteDebuggingPort(getDebugPort())
+                                .userDataDir(getPath());
+                        return svc.getBrowser(pluginID, path, builder, Optional.of((event, browser) -> {
+                            Log.write("JXBrowser", Log.Severity.Error, "Browser {0} crashed for reason {1}", Log.Level.USER);
+                        }));
+                    } else {
+                        return svc.getBrowser(pluginID, path, Optional.of((event, browser) -> {
+                            Log.write("JXBrowser", Log.Severity.Error, "Browser {0} crashed for reason {1}", Log.Level.USER);
+                        }));
+                    }
+
                 }
             } else {
             }
-            return getBrowserInstanceInMCCStandAlone();
+            return getBrowserInstanceInMCCStandAlone(bDebugStatus);
         } catch (Exception ex) {
             Log.write(pluginID, Log.Severity.Error, "Unable to access MPLABX JXbrowsers APIs. Please install latest MPLAB X version.", Log.Level.USER);
             Log.printException(ex);
-            return getBrowserInstanceInMCCStandAlone();
+            return getBrowserInstanceInMCCStandAlone(bDebugStatus);
         }
     }
 
@@ -78,13 +95,18 @@ public class JXbrowserEngine {
         }
     }
 
-    private Browser getBrowserInstanceInMCCStandAlone() {
+    private Browser getBrowserInstanceInMCCStandAlone(boolean bDebugStatus) {
         folderName = ".jxbrowser_standalone";
         Log.write("MCCHarmony", Log.Severity.Info, "MCC Harmony Standloane Mode", Log.Level.USER);
+
         EngineOptions.Builder builder = EngineOptions.newBuilder(RenderingMode.OFF_SCREEN)
                 // The language used on the default error pages and GUI.
                 .language(Language.ENGLISH_US)
                 .userDataDir(getPath());
+        if (bDebugStatus) {
+            builder.remoteDebuggingPort(getDebugPort());
+        }
+
         if (mccJXBrowserLicenseKey != null) {
             builder.licenseKey(mccJXBrowserLicenseKey);
         }
@@ -135,8 +157,8 @@ public class JXbrowserEngine {
             Log.printException(ex);
         }
     }
-    
-    public void removeUsedUserDirectory(Path dir){
+
+    public void removeUsedUserDirectory(Path dir) {
         usedJXBrowserDirectories.remove(dir);
     }
 }

@@ -7,6 +7,7 @@ package com.microchip.mh3.plugin.generic_plugin.gui;
 
 
 import com.microchip.mh3.log.Log;
+import com.microchip.mh3.plugin.browser_engine.GenericPackagePlugin;
 import com.microchip.mh3.plugin.browser_engine.JXbrowserEngine;
 import com.teamdev.jxbrowser.browser.Browser;
 import com.teamdev.jxbrowser.browser.callback.AlertCallback;
@@ -72,9 +73,13 @@ public final class JFxWebBrowser extends Region {
             this.parentStage = parentStage;
             javaConnector = new JavaConnector(pluginConfig, parentStage, this);
             browserEngine = new JXbrowserEngine();
-            browser = browserEngine.getBrowserInstance(pluginConfig.pluginName());
-//            Log.write(pluginManagerName, Log.Severity.Info, "JXBrowser remote de-bugging port : " +browser.engine().options().remoteDebuggingPort(), Log.Level.USER);
-            Log.write(pluginConfig.pluginName(), Log.Severity.Info, "JXBrowser user directory : " + browser.engine().options().userDataDir(), Log.Level.USER);
+            browser = browserEngine.getBrowserInstance(pluginConfig.pluginName(), pluginConfig.debugEnabled());
+            if(pluginConfig.debugEnabled()){
+                Log.write(pluginConfig.pluginName(), Log.Severity.Info, "JXBrowser remote debugging port : " + browser.engine().options().remoteDebuggingPort() , Log.Level.USER);
+                Log.write(pluginConfig.pluginName(), Log.Severity.Info, "To debug "+pluginConfig.pluginName()+" make sure the plugin is "
+                        + "launched and now load \"chrome://inspect\" in google chrome and wait for few seconds then click on inspect link"
+                        + " (under remote target) to debug.", Log.Level.USER);
+            }
             browser.set(InjectJsCallback.class, params -> {
                 frame = params.frame();
                 String window = "window";
