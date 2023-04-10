@@ -1,5 +1,13 @@
 # Harmony Services Release Notes
 
+## Harmony Services Release v1.2.1
+
+### Bug fixes
+- Fixed minor bugs.
+
+### Known Issues
+- None
+
 ## Harmony Services Release v1.2.0
 
 ### Bug fixes
