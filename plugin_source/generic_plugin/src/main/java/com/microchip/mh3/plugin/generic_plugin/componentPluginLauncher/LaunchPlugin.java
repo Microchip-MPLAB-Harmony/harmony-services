@@ -24,9 +24,6 @@ public class LaunchPlugin  {
     public BrowserLauncher browserLauncher;
 
     public String COMPONENT_ID ;
-    
-    BrowserLauncher jfxBrowserStage;
-
 
     public String getName() {
         return pluginConfig.pluginName();
@@ -81,8 +78,8 @@ public class LaunchPlugin  {
             return;
         }
         Platform.runLater(() -> {
-            if (jfxBrowserStage != null) {
-                jfxBrowserStage.clearObjects();
+            if (browserLauncher != null) {
+                browserLauncher.clearObjects();
             }
         });
 

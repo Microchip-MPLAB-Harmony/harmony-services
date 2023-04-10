@@ -12,15 +12,18 @@ import com.microchip.h3.database.component.FrameworkComponent;
 import com.microchip.h3.database.symbol.Symbol;
 import com.microchip.mh3.database.Database;
 import com.microchip.mh3.event.Events;
+import com.microchip.mh3.log.Log;
 import com.microchip.utils.event.Event;
 import com.microchip.utils.event.EventHandler;
+import java.util.ArrayList;
 
 public class DefaultDatabaseAgent implements DatabaseAgent {
     
     EventHandler eventHandler;
     
     private final ComponentManager componentManager;
-    private String COMPONENT_ID;
+    private final ArrayList<String> componentIdList = new ArrayList<>();
+    private int componentIdErrorCount = 0;
 
     /*------------------------- Symbol Listener ---------------------------*/
     private StateChangeListener stateListener = null;
@@ -32,7 +35,7 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
     }
     
     public void setComponentID(String componentId) {
-        this.COMPONENT_ID = componentId;
+        componentIdList.add(componentId);
     }
     
     public void destroy() {
@@ -44,14 +47,20 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
         if (symbol == null) {
             return;
         }
-        
         if (!(symbol.getComponent() instanceof FrameworkComponent)) {
             return;
         }
         FrameworkComponent component = (FrameworkComponent) symbol.getComponent();
-        
-        if (component.getID().equals(COMPONENT_ID)) {
-            stateListener.stateChanged(symbol);
+        if (componentIdList.contains(component.getID())) {
+            stateListener.stateChanged(symbol);  
+            return;
+        }
+        if(componentIdList.isEmpty()){
+            if(componentIdErrorCount == 0){
+                Log.write("Generic Plugin", Log.Severity.Error, "Listener component id is not configured for current launched plugin. "
+                    + "This will break symbol reverse communication."  , Log.Level.USER);
+                componentIdErrorCount++;
+            }
         }
     }
     
@@ -88,10 +97,5 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
             throw new NullPointerException();
         }
         stateListener = l;
-    }
-    
-    @Override
-    public String getComponentID() {
-        return this.COMPONENT_ID;
     }
 }

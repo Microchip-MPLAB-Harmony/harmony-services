@@ -9,7 +9,6 @@ import com.microchip.mh3.plugin.packageplugin.PackagePlugin;
 import com.microchip.mh3.plugin.packageplugin.PackagePluginManager;
 import com.microchip.mh3.plugin.packageplugin.PluginConfiguration;
 import java.nio.file.Path;
-import java.util.Map;
 import javafx.application.Platform;
 
 public class GenericPackagePlugin implements PackagePlugin {

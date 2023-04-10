@@ -47,6 +47,9 @@ public class Plugin extends com.microchip.mh3.plugin.Plugin implements Component
         if (Core.getInstance().getType() == Core.Type.Headless) {
             return true;
         }
+        browserList.entrySet().forEach(cpc -> {
+            cpc.getValue().handleComponentDeactivation(cpc.getKey());
+        });
         return true;
     }
 

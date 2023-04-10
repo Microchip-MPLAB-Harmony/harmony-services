@@ -8,7 +8,5 @@ package com.microchip.mh3.plugin.generic_plugin.database;
 public interface DatabaseAgent {
 
     public void addStateListener(StateChangeListener stateChangeListener);
-
-    public String getComponentID();
     
 }
