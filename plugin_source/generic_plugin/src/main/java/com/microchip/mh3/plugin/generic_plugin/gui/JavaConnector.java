@@ -25,7 +25,7 @@ import javafx.stage.Stage;
 
 @JsAccessible
 public final class JavaConnector {
-    
+
     private final HtmlPluginConfig pluginConfig;
 
     Stage parentStage;
@@ -82,6 +82,16 @@ public final class JavaConnector {
             Log.printException(e);
         }
         return null;
+    }
+
+    @JsAccessible
+    public String getSymbolDescription(String componentId, String symbolId) {
+        return DatabaseAccess.getSymbolDescription(pluginConfig.pluginName(), componentId, symbolId);
+    }
+
+    @JsAccessible
+    public Object getSymbolDefaultValue(String componentId, String symbolId) {
+        return DatabaseAccess.getSymbolDefaultValue(pluginConfig.pluginName(), componentId, symbolId);
     }
 
     @JsAccessible
@@ -166,12 +176,12 @@ public final class JavaConnector {
     public boolean IsTrustZoneSupported() {
         return Environment.isTrustzoneEnabled();
     }
-    
+
     @JsAccessible
-    public void sendMessage(String componentID, String messageID, Map<String,Object> args){
+    public void sendMessage(String componentID, String messageID, Map<String, Object> args) {
         DatabaseAccess.sendMessage(pluginConfig.pluginName(), componentID, messageID, args);
     }
-    
+
     public void stateChanged(Symbol sy) {
         if (!symbolListenersList.contains(sy.getID())) {
             return;
@@ -192,15 +202,15 @@ public final class JavaConnector {
             }
         });
     }
-    
-    public void componentActivated(Event event){
-       Component c = ((DatabaseEvents.ComponentActivatedEvent) event).component;
-       browserObject.getFrame().executeJavaScript("ComponentActivated(\""+c.getID()+"\")");
+
+    public void componentActivated(Event event) {
+        Component c = ((DatabaseEvents.ComponentActivatedEvent) event).component;
+        browserObject.getFrame().executeJavaScript("ComponentActivated(\"" + c.getID() + "\")");
     }
-    
-    public void componentDeActivated(Event event){
+
+    public void componentDeActivated(Event event) {
         Component c = ((DatabaseEvents.ComponentDeactivatedEvent) event).component;
-        browserObject.getFrame().executeJavaScript("ComponentDeActivated(\""+c.getID()+"\")");
+        browserObject.getFrame().executeJavaScript("ComponentDeActivated(\"" + c.getID() + "\")");
     }
 
     public void clearJavaConnectorObjects() {

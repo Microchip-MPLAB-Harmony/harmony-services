@@ -228,6 +228,25 @@ public class DatabaseAccess {
         Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
         return sym.getSymbolType();
     }
+    
+    public static String getSymbolDescription(String pluginName, String componentID, String symbolID) {
+        Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
+        if (sym instanceof KeyValueSetSymbol) {
+             KeyValueSetSymbol symNew = (KeyValueSetSymbol)sym;
+             return symNew.getDescription();
+        }
+         Log.write(pluginName, Log.Severity.Error, "Symbol Description not found for : " + symbolID , Log.Level.USER);
+        return null;
+    }
+    
+    public static Object getSymbolDefaultValue(String pluginName, String componentID, String symbolID) {
+        Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
+        if(sym instanceof ConfigSymbol){
+            ((ConfigSymbol)sym).getDefaultValue();
+        }
+        Log.write(pluginName, Log.Severity.Error, "Symbol Default value not found for : " + symbolID , Log.Level.USER);
+        return null;
+    }
 
     public static void sendMessage(String pluginMangerName, String componentID, String messageID, Map<String, Object> args) {
         try {
