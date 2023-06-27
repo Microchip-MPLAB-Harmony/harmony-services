@@ -26,6 +26,13 @@
             <systemPath>${user.home}/.mcc/libraries/Harmony3Library_v1.1.5/Harmony3Library.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>core</groupId>
+            <artifactId>core</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${user.home}/.mcc/cores/5.4.4/core.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>jxbrowser</groupId>
             <artifactId>jxbrowser</artifactId>
             <scope>system</scope>

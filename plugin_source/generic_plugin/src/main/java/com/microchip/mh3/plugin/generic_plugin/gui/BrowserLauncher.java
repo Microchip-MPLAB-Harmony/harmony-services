@@ -8,6 +8,8 @@ package com.microchip.mh3.plugin.generic_plugin.gui;
 
 
 import com.microchip.mh3.log.Log;
+import com.microchip.mh3.plugin.generic_plugin.database.ComponentService;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -46,31 +48,34 @@ public class BrowserLauncher  {
         if(scene!=null){
             scene = null;
         }
-         if (stage != null) {
+        if (stage != null) {
              stage.close();
              stage = null;
-            }
+        }
+        ComponentService.singleton().destroy();
     }
 
     public void createAndShowStage() {
-        try {
-            if (stage == null) {
-                stage = new Stage();
-                stage.setScene(getScene(pluginConfig.mainHtmlPath()));
-                stage.setTitle(pluginConfig.pluginName());
-                stage.setMaximized(true);
-                stage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, e -> {
-                    clearObjects();
-                    this.stage = null;
-                });
+        Platform.runLater(()->{
+            try {
+                if (stage == null) {
+                    stage = new Stage();
+                    stage.setScene(getScene(pluginConfig.mainHtmlPath()));
+                    stage.setTitle(pluginConfig.pluginName());
+                    stage.setMaximized(true);
+                    stage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, e -> {
+                        clearObjects();
+                        this.stage = null;
+                    });
+                }
+                stage.show();
+                stage.toFront();
+            } catch (Exception ex) {
+                Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Unable to create stage ", Log.Level.USER);
+                Log.printException(ex);
+                logError();
             }
-            stage.show();
-            stage.toFront();
-        } catch (Exception ex) {
-            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Unable to create stage ", Log.Level.USER);
-            Log.printException(ex);
-            logError();
-        }
+        });
     }
     
      private void logError() {

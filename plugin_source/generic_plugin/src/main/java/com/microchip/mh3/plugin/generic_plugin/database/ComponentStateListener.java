@@ -5,9 +5,9 @@
  */
 package com.microchip.mh3.plugin.generic_plugin.database;
 
-public interface DatabaseAgent {
+import com.microchip.utils.event.Event;
 
-    public void addStateListener(StateChangeListener stateChangeListener);
-    public void addComponentStateListener(ComponentStateListener componentStateChangeListener);
-    
+@FunctionalInterface
+public interface ComponentStateListener {
+    public void componentStateChanged(Event event);
 }

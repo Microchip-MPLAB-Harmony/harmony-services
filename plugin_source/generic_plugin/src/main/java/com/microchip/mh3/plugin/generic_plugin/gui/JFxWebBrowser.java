@@ -9,6 +9,7 @@ package com.microchip.mh3.plugin.generic_plugin.gui;
 import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.browser_engine.GenericPackagePlugin;
 import com.microchip.mh3.plugin.browser_engine.JXbrowserEngine;
+import com.microchip.mh3.plugin.generic_plugin.database.ComponentService;
 import com.teamdev.jxbrowser.browser.Browser;
 import com.teamdev.jxbrowser.browser.callback.AlertCallback;
 import com.teamdev.jxbrowser.browser.callback.CreatePopupCallback;
@@ -90,6 +91,7 @@ public final class JFxWebBrowser extends Region {
                 }
                 jsObject.putProperty("javaConnector", javaConnector);
                 jsObject.putProperty("pluginConfig", pluginConfig);
+                jsObject.putProperty("componentService", ComponentService.singleton());
                 return InjectJsCallback.Response.proceed();
             });
 

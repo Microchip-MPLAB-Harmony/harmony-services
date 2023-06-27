@@ -5,14 +5,18 @@
  */
 package com.microchip.mh3.plugin.generic_plugin.gui;
 
+import com.microchip.h3.database.DatabaseEvents;
+import com.microchip.h3.database.component.Component;
 import com.microchip.h3.database.symbol.ConfigSymbol;
 import com.microchip.h3.database.symbol.Symbol;
 import com.microchip.mh3.environment.Environment;
 import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.database.DatabaseAccess;
 import com.microchip.mh3.plugin.generic_plugin.database.DefaultDatabaseAgent;
+import com.microchip.utils.event.Event;
 import com.teamdev.jxbrowser.js.JsAccessible;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,6 +44,8 @@ public final class JavaConnector {
         this.browserObject = browserObject;
         agent = new DefaultDatabaseAgent();
         agent.addStateListener(this::stateChanged);
+        agent.addComponentStateListener(this::componentActivated);
+        agent.addComponentStateListener(this::componentActivated);
     }
 
     @JsAccessible
@@ -70,8 +76,6 @@ public final class JavaConnector {
                     builder.append("M*C");
                 }
             }
-//            String joined = String.join("M*C", comboValues);
-//            System.out.println(joined);
             return builder.toString();
         } catch (Exception e) {
             Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
@@ -98,7 +102,7 @@ public final class JavaConnector {
 
     @JsAccessible
     public String getSymbolLabelName(String stComponent, String symbolID) {
-        return DatabaseAccess.getLabelName(stComponent, symbolID);
+        return DatabaseAccess.getLabelName(pluginConfig.pluginName(), stComponent, symbolID);
     }
 
     @JsAccessible
@@ -162,7 +166,12 @@ public final class JavaConnector {
     public boolean IsTrustZoneSupported() {
         return Environment.isTrustzoneEnabled();
     }
-
+    
+    @JsAccessible
+    public void sendMessage(String componentID, String messageID, Map<String,Object> args){
+        DatabaseAccess.sendMessage(pluginConfig.pluginName(), componentID, messageID, args);
+    }
+    
     public void stateChanged(Symbol sy) {
         if (!symbolListenersList.contains(sy.getID())) {
             return;
@@ -182,6 +191,16 @@ public final class JavaConnector {
                 Log.printException(ex);
             }
         });
+    }
+    
+    public void componentActivated(Event event){
+       Component c = ((DatabaseEvents.ComponentActivatedEvent) event).component;
+       browserObject.getFrame().executeJavaScript("ComponentActivated(\""+c.getID()+"\")");
+    }
+    
+    public void componentDeActivated(Event event){
+        Component c = ((DatabaseEvents.ComponentDeactivatedEvent) event).component;
+        browserObject.getFrame().executeJavaScript("ComponentDeActivated(\""+c.getID()+"\")");
     }
 
     public void clearJavaConnectorObjects() {

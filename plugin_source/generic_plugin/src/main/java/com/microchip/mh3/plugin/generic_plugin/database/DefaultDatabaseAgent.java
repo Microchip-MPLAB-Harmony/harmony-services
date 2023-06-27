@@ -6,8 +6,10 @@
 package com.microchip.mh3.plugin.generic_plugin.database;
 
 import com.microchip.h3.database.ComponentManager;
+import com.microchip.h3.database.DatabaseEvents;
 import com.microchip.h3.database.DatabaseEvents.SymbolValueChangedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolVisualChangedEvent;
+import com.microchip.h3.database.component.Component;
 import com.microchip.h3.database.component.FrameworkComponent;
 import com.microchip.h3.database.symbol.Symbol;
 import com.microchip.mh3.database.Database;
@@ -16,33 +18,34 @@ import com.microchip.mh3.log.Log;
 import com.microchip.utils.event.Event;
 import com.microchip.utils.event.EventHandler;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultDatabaseAgent implements DatabaseAgent {
-    
+
     EventHandler eventHandler;
-    
-    private final ComponentManager componentManager;
+
     private final ArrayList<String> componentIdList = new ArrayList<>();
     private int componentIdErrorCount = 0;
 
     /*------------------------- Symbol Listener ---------------------------*/
     private StateChangeListener stateListener = null;
-    
+    private List<ComponentStateListener> componentStateChangeListener = new ArrayList();
+
     public DefaultDatabaseAgent() {
-        this.componentManager = Database.get().getComponentManager();
         eventHandler = new GlobalSymbolEventHandler();
         Events.addHandler(eventHandler);
     }
-    
+
     public void setComponentID(String componentId) {
         componentIdList.add(componentId);
     }
-    
+
     public void destroy() {
         Events.removeHandler(eventHandler);
-        stateListener = null;       
+        stateListener = null;
+        componentStateChangeListener = null;
     }
-    
+
     public void notifySymbolChanged(Symbol symbol) {
         if (symbol == null) {
             return;
@@ -52,32 +55,40 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
         }
         FrameworkComponent component = (FrameworkComponent) symbol.getComponent();
         if (componentIdList.contains(component.getID())) {
-            stateListener.stateChanged(symbol);  
+            stateListener.stateChanged(symbol);
             return;
         }
-        if(componentIdList.isEmpty()){
-            if(componentIdErrorCount == 0){
+        if (componentIdList.isEmpty()) {
+            if (componentIdErrorCount == 0) {
                 Log.write("Generic Plugin", Log.Severity.Error, "Listener component id is not configured for current launched plugin. "
-                    + "This will break symbol reverse communication."  , Log.Level.USER);
+                        + "This will break symbol reverse communication.", Log.Level.USER);
                 componentIdErrorCount++;
             }
         }
     }
-    
+
+    public void notifyComponentStateChanged(Event event) {
+        componentStateChangeListener.forEach(com -> {
+            com.componentStateChanged(event);
+        });
+    }
+
     class GlobalSymbolEventHandler implements EventHandler {
-        
-        private final Class[] FILTER = {SymbolValueChangedEvent.class, SymbolVisualChangedEvent.class};
-        
+
+        private final Class[] FILTER = {SymbolValueChangedEvent.class,
+            SymbolVisualChangedEvent.class, DatabaseEvents.ComponentActivatedEvent.class,
+            DatabaseEvents.ComponentDeactivatedEvent.class};
+
         @Override
         public Class<?>[] getEventFilters() {
             return FILTER;
         }
-        
+
         @Override
         public String getHandlerName() {
             return this.getClass().getSimpleName();
         }
-        
+
         @Override
         public void handleEvent(Event evt) throws Exception {
             if (evt instanceof SymbolValueChangedEvent) {
@@ -86,6 +97,10 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
             } else if (evt instanceof SymbolVisualChangedEvent) {
                 Symbol s = ((SymbolVisualChangedEvent) evt).sym;
                 notifySymbolChanged(s);
+            } else if (evt instanceof DatabaseEvents.ComponentActivatedEvent) {
+                notifyComponentStateChanged(evt);
+            } else if (evt instanceof DatabaseEvents.ComponentDeactivatedEvent) {
+                notifyComponentStateChanged(evt);
             }
         }
     }
@@ -97,5 +112,15 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
             throw new NullPointerException();
         }
         stateListener = l;
+    }
+
+    @Override
+    public void addComponentStateListener(ComponentStateListener c) {
+        if (componentStateChangeListener == null) {
+            throw new NullPointerException();
+        }
+        if(!componentStateChangeListener.contains(c)){
+            this.componentStateChangeListener.add(c);
+        }
     }
 }
