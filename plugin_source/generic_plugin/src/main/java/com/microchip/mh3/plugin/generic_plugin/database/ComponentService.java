@@ -5,7 +5,6 @@
  */
 package com.microchip.mh3.plugin.generic_plugin.database;
 
-import com.microchip.h3.database.component.FrameworkComponent;
 import com.microchip.mcc.harmony.Harmony3Library;
 import com.microchip.mcc.harmony.HarmonyPluginInterface;
 import com.microchip.mh3.log.Log;
@@ -13,7 +12,6 @@ import com.teamdev.jxbrowser.js.JsAccessible;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.application.Platform;
 
 @JsAccessible
@@ -57,10 +55,15 @@ public class ComponentService {
     }
 
     @JsAccessible
-    public Stream<FrameworkComponent> activeComponents() {
-        return harmonyPluginInterface.getActiveComponents();
+    public String[] getActiveComponents() {
+        return harmonyPluginInterface.getActiveComponents().map(e-> e.getID()).toArray(String[] ::new);
     }
-
+    
+    @JsAccessible
+    public final String[] getAvailableComponents() {
+        return harmonyPluginInterface.getAvailableFrameworkComponents().map(e-> e.getID()).toArray(String[] ::new);
+    }
+    
     @JsAccessible
     public CompletableFuture<Void> activateComponent(String groupID, String componentID) {
 
@@ -114,7 +117,6 @@ public class ComponentService {
     }
 
     // Sneaky suffix says that this method is wrapping a Checked Exception inside RuntimeException
-    @JsAccessible
     private void activateComponentSneaky(String componentID) {
         try {
             harmonyPluginInterface.activateComponent(componentID);
@@ -122,8 +124,7 @@ public class ComponentService {
             throw new RuntimeException("Unable to activate Component.", ex);
         }
     }
-
-    @JsAccessible
+    
     private void activateComponentSneaky(String groupID, String componentID) {
         try {
             harmonyPluginInterface.activateComponents(new String[]{componentID}, groupID, false);

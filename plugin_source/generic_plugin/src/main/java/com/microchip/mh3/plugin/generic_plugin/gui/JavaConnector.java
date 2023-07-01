@@ -54,10 +54,20 @@ public final class JavaConnector {
     }
 
     @JsAccessible
-    public String getSymbolData(String componentId, String symbolId) {
+    public Object getSymbolData(String componentId, String symbolId) {
         try {
-            String symbolValue = DatabaseAccess.getParameterValue(componentId, symbolId).toString();
-            return symbolValue;
+            return DatabaseAccess.getParameterValue(componentId, symbolId);
+        } catch (Exception e) {
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
+            Log.printException(e);
+        }
+        return null;
+    }
+    
+    @JsAccessible
+    public Object getSymbolDataByDisplayMode(String componentId, String symbolId, String displayMode) {
+        try {
+            return DatabaseAccess.getParameterValueByDisplayMode(componentId, symbolId, displayMode);
         } catch (Exception e) {
             Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
             Log.printException(e);
@@ -70,12 +80,31 @@ public final class JavaConnector {
         try {
             StringBuilder builder = new StringBuilder();
             String[] comboValues = DatabaseAccess.getSymbolArrayValues(componentId, symbolId);
-            for (int i = 0; i < comboValues.length; i++) {
-                builder.append(comboValues[i]);
-                if (i != comboValues.length - 1) {
-                    builder.append("M*C");
-                }
+            builder = getValues(builder, comboValues);
+            return builder.toString();
+        } catch (Exception e) {
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
+            Log.printException(e);
+        }
+        return null;
+    }
+    
+    private StringBuilder getValues(StringBuilder builder, String[] comboValues) {
+        for (int i = 0; i < comboValues.length; i++) {
+            builder.append(comboValues[i]);
+            if (i != comboValues.length - 1) {
+                builder.append("M*C");
             }
+        }
+        return builder;
+    }
+    
+    @JsAccessible
+    public String getSymbolValuesByDisplayMode(String componentId, String symbolId, String displayMode) {
+        try {
+            StringBuilder builder = new StringBuilder();
+            String[] comboValues = DatabaseAccess.getSymbolArrayValuesByDisplayMode(componentId, symbolId, displayMode);
+            builder = getValues(builder, comboValues);
             return builder.toString();
         } catch (Exception e) {
             Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
@@ -91,7 +120,12 @@ public final class JavaConnector {
 
     @JsAccessible
     public Object getSymbolDefaultValue(String componentId, String symbolId) {
-        return DatabaseAccess.getSymbolDefaultValue(pluginConfig.pluginName(), componentId, symbolId);
+        return DatabaseAccess.getSymbolDefaultValue(pluginConfig.pluginName(), componentId, symbolId, "");
+    }
+    
+    @JsAccessible
+    public Object getSymbolDefaultValueByDisplayMode(String componentId, String symbolId, String displayMode) {
+        return DatabaseAccess.getSymbolDefaultValue(pluginConfig.pluginName(), componentId, symbolId, displayMode);
     }
 
     @JsAccessible
@@ -106,6 +140,18 @@ public final class JavaConnector {
     }
 
     @JsAccessible
+    public void updateMultipleSymbols(String componentId, Map<String, Object> symbolsInfo) {
+        symbolsInfo.keySet().forEach(symbolId -> {
+            try {
+                updateSymbolData(componentId, symbolId, symbolsInfo.get(symbolId));
+            } catch (Exception ex) {
+                Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Database Update failed: " + symbolId, Log.Level.USER);
+                Log.printException(ex);
+            }
+        });
+    }
+
+    @JsAccessible
     public String getSymbolType(String componentId, String symbolId) {
         return DatabaseAccess.getSymbolType(componentId, symbolId);
     }
@@ -117,22 +163,22 @@ public final class JavaConnector {
 
     @JsAccessible
     public Object getSymbolMinValue(String stComponent, String symbolID) {
-        return DatabaseAccess.getMinValue(stComponent, symbolID);
+        return DatabaseAccess.getMinValue(pluginConfig.pluginName(), stComponent, symbolID);
     }
 
     @JsAccessible
     public Object getSymbolMaxValue(String stComponent, String symbolID) {
-        return DatabaseAccess.getMaxValue(stComponent, symbolID);
+        return DatabaseAccess.getMaxValue(pluginConfig.pluginName(), stComponent, symbolID);
     }
 
     @JsAccessible
     public Object getSymbolVisibleStatus(String stComponent, String symbolID) {
-        return DatabaseAccess.getSymbolVisibleStatus(stComponent, symbolID);
+        return DatabaseAccess.getSymbolVisibleStatus(pluginConfig.pluginName(), stComponent, symbolID);
     }
 
     @JsAccessible
     public Object getSymbolReadOnlyStatus(String stComponent, String symbolID) {
-        return DatabaseAccess.getSymbolReadOnlyStatus(stComponent, symbolID);
+        return DatabaseAccess.getSymbolReadOnlyStatus(pluginConfig.pluginName(), stComponent, symbolID);
     }
 
     @JsAccessible
@@ -223,5 +269,6 @@ public final class JavaConnector {
             executorService.shutdownNow();
         }
         executorService = null;
+        agent.destroy();
     }
 }

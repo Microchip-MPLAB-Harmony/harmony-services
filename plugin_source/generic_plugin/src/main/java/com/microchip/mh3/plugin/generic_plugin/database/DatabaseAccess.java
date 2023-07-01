@@ -22,15 +22,18 @@ public class DatabaseAccess {
 
     public static void setParameterValue(String pluginMangerName, String szComponentID, String symbolId, Object value) {
         Symbol sym = Database.get().getComponentManager().getSymbolByID(null, szComponentID, symbolId);
+        Object objPrevious = Database.get().getComponentManager().getSymbolValue(null, szComponentID, symbolId);
         if (sym == null) {
             Log.write(pluginMangerName, Log.Severity.Error, "Symbol ID not found : " + symbolId, Log.Level.USER);
             return;
         }
-
         switch (sym.getSymbolType()) {
             case "Boolean":
                 boolean bUpdate = (boolean) value.toString().equalsIgnoreCase("True");
-                Database.get().getComponentManager().setSymbolUserValue(null, szComponentID, symbolId, bUpdate);
+                boolean bPrevious = (boolean) objPrevious;
+                if (bUpdate != bPrevious) {
+                    Database.get().getComponentManager().setSymbolUserValue(null, szComponentID, symbolId, bUpdate);
+                }
                 break;
             case "Integer":
             case "Long":
@@ -41,20 +44,30 @@ public class DatabaseAccess {
                 } else {
                     nUpdate = Integer.parseInt(value.toString().replace("0x", ""));
                 }
-
-                Database.get().getComponentManager().setSymbolUserValue(null, szComponentID, symbolId, nUpdate);
+                int nPrevious = (int) objPrevious;
+                if (nUpdate != nPrevious) {
+                    Database.get().getComponentManager().setSymbolUserValue(null, szComponentID, symbolId, nUpdate);
+                }
                 break;
             case "Float":
                 FloatSymbol floatSymbol = (FloatSymbol) sym;
                 float fUpdate = Float.parseFloat(value.toString());
-                floatSymbol.setUserValue(fUpdate);
+                float fPrevious = (float) objPrevious;
+                if (fUpdate != fPrevious) {
+                    floatSymbol.setUserValue(fUpdate);
+                }
                 break;
             case "KeyValueSet":
                 KeyValueSetSymbol symbol = (KeyValueSetSymbol) Database.get().getComponentManager().getSymbolByID(null, szComponentID, symbolId);
-                symbol.setUserValue(getKeyValueSelectedIndex_ByKey(value, symbol));
+                int nUpdate_keyvalue = getKeyValueSelectedIndex_ByKey(value, symbol);
+                if (symbol.getValue() != nUpdate_keyvalue) {
+                    symbol.setUserValue(nUpdate_keyvalue);
+                }
                 break;
             default:
-                Database.get().getComponentManager().setSymbolUserValue(null, szComponentID, symbolId, value);
+                if (!objPrevious.equals(value)) {
+                    Database.get().getComponentManager().setSymbolUserValue(null, szComponentID, symbolId, value);
+                }
                 break;
         }
     }
@@ -91,19 +104,37 @@ public class DatabaseAccess {
         switch (sym.getSymbolType()) {
             case "KeyValueSet":
                 KeyValueSetSymbol symbol = (KeyValueSetSymbol) Database.get().getComponentManager().getSymbolByID(null, szComponentID, id);
-                return getKeyValueSetDisplayValue(symbol);
+                return getKeyValueSetDisplayValue(symbol, symbol.getValue(), symbol.getDisplayMode());
             default:
                 return Database.get().getComponentManager().getSymbolValue(null, szComponentID, id);
         }
     }
 
-    private static Object getKeyValueSetDisplayValue(KeyValueSetSymbol symbol) {
+    public static Object getParameterValueByDisplayMode(String szComponentID, String symbolId, String displayMode) {
+        Symbol sym = Database.get().getComponentManager().getSymbolByID(null, szComponentID, symbolId);
+        if (sym instanceof KeyValueSetSymbol) {
+            KeyValueSetSymbol symbol = (KeyValueSetSymbol) Database.get().getComponentManager().getSymbolByID(null, szComponentID, symbolId);
+            return getKeyValueSetDisplayValue(symbol, symbol.getValue(), getKeyValueSetModeType(displayMode));
+        }
+        return null;
+    }
+
+    private static KeyValueSetSymbol.DisplayMode getKeyValueSetModeType(String displayMode) {
+        if (displayMode.equalsIgnoreCase("Key")) {
+            return KeyValueSetSymbol.DisplayMode.Key;
+        } else if (displayMode.equalsIgnoreCase("Value")) {
+            return KeyValueSetSymbol.DisplayMode.Value;
+        } else if (displayMode.equalsIgnoreCase("Description")) {
+            return KeyValueSetSymbol.DisplayMode.Description;
+        }
+        return null;
+    }
+
+    private static Object getKeyValueSetDisplayValue(KeyValueSetSymbol symbol, int index, KeyValueSetSymbol.DisplayMode dmode) {
         Object displayValue = null;
         List<KeyValuePairListAttribute.KeyValuePair> values = symbol.getValues();
-        int index = symbol.getValue();
 
         //OutputMode oMode = symbol.getOutputMode();
-        KeyValueSetSymbol.DisplayMode dmode = symbol.getDisplayMode();
         if (null != dmode) {
             switch (dmode) {
                 case Key:
@@ -127,7 +158,8 @@ public class DatabaseAccess {
         Symbol sym = Database.get().getComponentManager().getSymbolByID(null, szComponentID, id);
         switch (sym.getSymbolType()) {
             case "KeyValueSet":
-                return getKeyValueSetDisplayValues(szComponentID, id);
+                KeyValueSetSymbol newSym = (KeyValueSetSymbol) sym;
+                return getKeyValueSetDisplayValues(szComponentID, id, newSym.getDisplayMode());
             case "Combo":
                 ComboSymbol symbol = (ComboSymbol) sym;
                 return symbol.getValues().toArray(new String[0]);
@@ -135,7 +167,15 @@ public class DatabaseAccess {
         return null;
     }
 
-    public static String[] getKeyValueSetDisplayValues(String szComponentID, String id) {
+    public static String[] getSymbolArrayValuesByDisplayMode(String szComponentID, String symbolId, String displayMode) {
+        Symbol sym = Database.get().getComponentManager().getSymbolByID(null, szComponentID, symbolId);
+        if (sym instanceof KeyValueSetSymbol) {
+            return getKeyValueSetDisplayValues(szComponentID, symbolId, getKeyValueSetModeType(displayMode));
+        }
+        return null;
+    }
+
+    public static String[] getKeyValueSetDisplayValues(String szComponentID, String id, KeyValueSetSymbol.DisplayMode dmode) {
         Symbol sym = Database.get().getComponentManager().getSymbolByID(null, szComponentID, id);
         if (!"KeyValueSet".equals(sym.getSymbolType())) {
             return new String[]{};
@@ -144,7 +184,6 @@ public class DatabaseAccess {
         KeyValueSetSymbol symbol = (KeyValueSetSymbol) sym;
         List<String> displayValues = new ArrayList<>();
         //OutputMode oMode = symbol.getOutputMode();
-        KeyValueSetSymbol.DisplayMode dmode = symbol.getDisplayMode();
 
         List<KeyValuePairListAttribute.KeyValuePair> values = symbol.getValues();
         for (int i = 0; i < values.size(); i++) {
@@ -174,47 +213,63 @@ public class DatabaseAccess {
                 return ((ConfigSymbol) sym).getLabel();
             }
         } catch (Exception e) {
-            Log.write(pluginName, Log.Severity.Error, "Symbol label value null : " + symbolID, Log.Level.USER);
+            Log.write(pluginName, Log.Severity.Error, "Symbol label name not found for : " + symbolID, Log.Level.USER);
             Log.printException(e);
         }
-        Log.write(pluginName, Log.Severity.Error, "Symbol is not ConfigTypeSymbol : " + symbolID, Log.Level.USER);
+        Log.write(pluginName, Log.Severity.Error, "Symbol label name not found for : " + symbolID, Log.Level.USER);
         return null;
     }
 
-    public static Object getMinValue(String componentID, String symbolID) {
+    public static Object getMinValue(String pluginName, String componentID, String symbolID) {
         Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
         if (sym instanceof IntegerSymbol) {
             return ((IntegerSymbol) sym).getMin();
         } else if (sym instanceof FloatSymbol) {
             return ((FloatSymbol) sym).getMin();
         }
-        return symbolID + " Not a Integer/Float SymbolType";
+        Log.write(pluginName, Log.Severity.Error, "Symbol minValue not found for : " + symbolID, Log.Level.USER);
+        return null;
     }
 
-    public static Object getMaxValue(String componentID, String symbolID) {
+    public static Object getMaxValue(String pluginName, String componentID, String symbolID) {
         Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
         if (sym instanceof IntegerSymbol) {
             return ((IntegerSymbol) sym).getMax();
         } else if (sym instanceof FloatSymbol) {
             return ((FloatSymbol) sym).getMax();
         }
-        return symbolID + " Not a Integer/Float SymbolType";
+        Log.write(pluginName, Log.Severity.Error, "Symbol maxValue not found for : " + symbolID, Log.Level.USER);
+        return null;
     }
 
-    public static Object getSymbolVisibleStatus(String componentID, String symbolID) {
-        Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
-        if (sym instanceof ConfigSymbol) {
-            return ((ConfigSymbol) sym).getVisible();
+    public static Object getSymbolVisibleStatus(String pluginName, String componentID, String symbolID) {
+        try {
+            Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
+            if (sym instanceof ConfigSymbol) {
+                return ((ConfigSymbol) sym).getVisible();
+            }
+        } catch (Exception ex) {
+            Log.write(pluginName, Log.Severity.Error, "Symbol visible status not found for : " + symbolID, Log.Level.USER);
+            Log.printException(ex);
+            return null;
         }
-        return "Not a ConfigTypeSymbol";
+        Log.write(pluginName, Log.Severity.Error, "Symbol visible status not found for : " + symbolID, Log.Level.USER);
+        return null;
     }
 
-    public static Object getSymbolReadOnlyStatus(String componentID, String symbolID) {
-        Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
-        if (sym instanceof ConfigSymbol) {
-            return ((ConfigSymbol) sym).getReadOnly();
+    public static Object getSymbolReadOnlyStatus(String pluginName, String componentID, String symbolID) {
+        try {
+            Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
+            if (sym instanceof ConfigSymbol) {
+                return ((ConfigSymbol) sym).getReadOnly();
+            }
+        } catch (Exception ex) {
+            Log.write(pluginName, Log.Severity.Error, "Symbol readOnly status not found for : " + symbolID, Log.Level.USER);
+            Log.printException(ex);
+            return null;
         }
-        return "Not a ConfigTypeSymbol";
+        Log.write(pluginName, Log.Severity.Error, "Symbol readOnly status not found for : " + symbolID, Log.Level.USER);
+        return null;
     }
 
     public static void clearUserSymbolValue(String componentId, String symbolID) {
@@ -228,29 +283,47 @@ public class DatabaseAccess {
         Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
         return sym.getSymbolType();
     }
-    
+
     public static String getSymbolDescription(String pluginName, String componentID, String symbolID) {
-        Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
-        if (sym instanceof KeyValueSetSymbol) {
-             KeyValueSetSymbol symNew = (KeyValueSetSymbol)sym;
-             return symNew.getDescription();
+        try {
+            Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
+            if (sym instanceof KeyValueSetSymbol) {
+                KeyValueSetSymbol newSym = (KeyValueSetSymbol) sym;
+                return newSym.getDescription();
+            } else if (sym instanceof ConfigSymbol) {
+                return ((ConfigSymbol) sym).getDescription();
+            }
+        } catch (Exception ex) {
+            Log.write(pluginName, Log.Severity.Error, "Symbol description value not found for : " + symbolID, Log.Level.USER);
+            Log.printException(ex);
+            return null;
         }
-         Log.write(pluginName, Log.Severity.Error, "Symbol Description not found for : " + symbolID , Log.Level.USER);
+        Log.write(pluginName, Log.Severity.Error, "Symbol description value not found for : " + symbolID, Log.Level.USER);
         return null;
     }
-    
-    public static Object getSymbolDefaultValue(String pluginName, String componentID, String symbolID) {
-        Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
-        if(sym instanceof ConfigSymbol){
-            ((ConfigSymbol)sym).getDefaultValue();
+
+    public static Object getSymbolDefaultValue(String pluginName, String componentID, String symbolID, String displayMode) {
+        try {
+            Symbol sym = Database.get().getComponentManager().getSymbolByID(null, componentID, symbolID);
+            if (sym instanceof KeyValueSetSymbol) {
+                KeyValueSetSymbol newSym = (KeyValueSetSymbol) sym;
+                return getKeyValueSetDisplayValue(newSym, newSym.getDefaultValue(), 
+                        displayMode.isEmpty() ? newSym.getDisplayMode() : getKeyValueSetModeType(displayMode));
+            } else if (sym instanceof ConfigSymbol) {
+                return ((ConfigSymbol) sym).getDefaultValue();
+            }
+        } catch (Exception ex) {
+            Log.write(pluginName, Log.Severity.Error, "Symbol default value not found for : " + symbolID, Log.Level.USER);
+            Log.printException(ex);
+            return null;
         }
-        Log.write(pluginName, Log.Severity.Error, "Symbol Default value not found for : " + symbolID , Log.Level.USER);
+        Log.write(pluginName, Log.Severity.Error, "Symbol default value not found for : " + symbolID, Log.Level.USER);
         return null;
     }
 
     public static void sendMessage(String pluginMangerName, String componentID, String messageID, Map<String, Object> args) {
         try {
-            Log.write(pluginMangerName, Log.Severity.Info, "SendMessage Called : " + componentID + " " + messageID + " " + args, Log.Level.USER);
+//            Log.write(pluginMangerName, Log.Severity.Info, "SendMessage Called : " + componentID + " " + messageID + " " + args, Log.Level.USER);
             Database.get().getComponentManager().sendMessage(componentID, messageID, args);
         } catch (Exception ex) {
             Log.write(pluginMangerName, Log.Severity.Error, "SendMessage API failed : " + componentID + " " + ex.getMessage(), Log.Level.USER);
