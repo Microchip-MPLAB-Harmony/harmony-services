@@ -1,5 +1,16 @@
 # Harmony Services Release Notes
 
+## Harmony Services Release v1.3.0
+
+### Bug fixes
+- Added component activation/deactivation and sendMessage API support to generic plugin.
+- Added support to get getSymbolDescription and getSymbolDefaultValue.
+- Added support to update multiple symbols and skipping symbol update if existing symbol value and update value is same.
+- Fixed minor bugs.
+
+### Known Issues
+- None
+
 ## Harmony Services Release v1.2.1
 
 ### Bug fixes
