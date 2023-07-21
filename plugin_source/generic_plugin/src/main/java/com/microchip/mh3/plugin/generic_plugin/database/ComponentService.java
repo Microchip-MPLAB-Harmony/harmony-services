@@ -8,6 +8,7 @@ package com.microchip.mh3.plugin.generic_plugin.database;
 import com.microchip.mcc.harmony.Harmony3Library;
 import com.microchip.mcc.harmony.HarmonyPluginInterface;
 import com.microchip.mh3.log.Log;
+import static com.microchip.mh3.plugin.generic_plugin.gui.tools.Utils.getArrayValuesAsString;
 import com.teamdev.jxbrowser.js.JsAccessible;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -55,18 +56,23 @@ public class ComponentService {
     }
 
     @JsAccessible
-    public String[] getActiveComponents() {
-        return harmonyPluginInterface.getActiveComponents().map(e-> e.getID()).toArray(String[] ::new);
+    public String getActiveComponents() {
+        StringBuilder components = new StringBuilder();
+        components = getArrayValuesAsString(components,
+                harmonyPluginInterface.getActiveComponents().map(e-> e.getID()).toArray(String[] ::new));
+        return components.toString();
     }
     
     @JsAccessible
-    public final String[] getAvailableComponents() {
-        return harmonyPluginInterface.getAvailableFrameworkComponents().map(e-> e.getID()).toArray(String[] ::new);
+    public String getAvailableComponents() {
+        StringBuilder components = new StringBuilder();
+        components = getArrayValuesAsString(components,
+                harmonyPluginInterface.getAvailableFrameworkComponents().map(e-> e.getID()).toArray(String[] ::new));
+        return components.toString();
     }
     
     @JsAccessible
     public CompletableFuture<Void> activateComponent(String groupID, String componentID) {
-
         if (groupID == null) {
             Log.write(this.pluginName, Log.Severity.Warning, "Group ID can not be null. Activating component in Root");
             return activateComponent(componentID);

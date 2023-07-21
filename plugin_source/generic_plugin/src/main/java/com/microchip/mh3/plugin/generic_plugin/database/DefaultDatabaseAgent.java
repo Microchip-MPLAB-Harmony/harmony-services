@@ -5,14 +5,11 @@
  */
 package com.microchip.mh3.plugin.generic_plugin.database;
 
-import com.microchip.h3.database.ComponentManager;
 import com.microchip.h3.database.DatabaseEvents;
 import com.microchip.h3.database.DatabaseEvents.SymbolValueChangedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolVisualChangedEvent;
-import com.microchip.h3.database.component.Component;
 import com.microchip.h3.database.component.FrameworkComponent;
 import com.microchip.h3.database.symbol.Symbol;
-import com.microchip.mh3.database.Database;
 import com.microchip.mh3.event.Events;
 import com.microchip.mh3.log.Log;
 import com.microchip.utils.event.Event;

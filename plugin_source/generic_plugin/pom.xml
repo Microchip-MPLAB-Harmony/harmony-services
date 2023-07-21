@@ -30,7 +30,7 @@
             <artifactId>core</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${user.home}/.mcc/cores/5.4.11/core.jar</systemPath>
+            <systemPath>${user.home}/.mcc/cores/5.5.7/core.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>jxbrowser</groupId>

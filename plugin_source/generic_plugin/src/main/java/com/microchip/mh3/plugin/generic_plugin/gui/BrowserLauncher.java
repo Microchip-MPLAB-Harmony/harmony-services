@@ -43,6 +43,7 @@ public class BrowserLauncher  {
     public void clearObjects(){
         if(browser!=null){
             browser.clearObjects();
+            ComponentService.singleton().destroy();
             browser = null;
         }
         if(scene!=null){
@@ -52,7 +53,6 @@ public class BrowserLauncher  {
              stage.close();
              stage = null;
         }
-        ComponentService.singleton().destroy();
     }
 
     public void createAndShowStage() {

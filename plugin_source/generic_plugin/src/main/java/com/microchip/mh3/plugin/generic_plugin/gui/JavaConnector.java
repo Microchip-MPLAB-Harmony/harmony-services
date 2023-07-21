@@ -13,6 +13,7 @@ import com.microchip.mh3.environment.Environment;
 import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.database.DatabaseAccess;
 import com.microchip.mh3.plugin.generic_plugin.database.DefaultDatabaseAgent;
+import static com.microchip.mh3.plugin.generic_plugin.gui.tools.Utils.getArrayValuesAsString;
 import com.microchip.utils.event.Event;
 import com.teamdev.jxbrowser.js.JsAccessible;
 import java.util.HashSet;
@@ -80,7 +81,7 @@ public final class JavaConnector {
         try {
             StringBuilder builder = new StringBuilder();
             String[] comboValues = DatabaseAccess.getSymbolArrayValues(componentId, symbolId);
-            builder = getValues(builder, comboValues);
+            builder = getArrayValuesAsString(builder, comboValues);
             return builder.toString();
         } catch (Exception e) {
             Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
@@ -89,22 +90,12 @@ public final class JavaConnector {
         return null;
     }
     
-    private StringBuilder getValues(StringBuilder builder, String[] comboValues) {
-        for (int i = 0; i < comboValues.length; i++) {
-            builder.append(comboValues[i]);
-            if (i != comboValues.length - 1) {
-                builder.append("M*C");
-            }
-        }
-        return builder;
-    }
-    
     @JsAccessible
     public String getSymbolValuesByDisplayMode(String componentId, String symbolId, String displayMode) {
         try {
             StringBuilder builder = new StringBuilder();
             String[] comboValues = DatabaseAccess.getSymbolArrayValuesByDisplayMode(componentId, symbolId, displayMode);
-            builder = getValues(builder, comboValues);
+            builder = getArrayValuesAsString(builder, comboValues);
             return builder.toString();
         } catch (Exception e) {
             Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
