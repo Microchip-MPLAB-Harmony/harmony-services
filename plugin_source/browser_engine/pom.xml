@@ -16,14 +16,14 @@
             <artifactId>Harmony3Library</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${env.USER_HOME_DIR}/.mcc/libraries/Harmony3Library_v1.1.5/Harmony3Library.jar</systemPath>
+            <systemPath>${user.home}/.mcc/libraries/Harmony3Library_v1.3.2/Harmony3Library.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>MccCore</groupId>
             <artifactId>MccCore</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${env.USER_HOME_DIR}/.mcc/cores/5.4.0/core.jar</systemPath>
+            <systemPath>${user.home}/.mcc/cores/5.5.7/core.jar</systemPath>
         </dependency>
          <dependency>
             <groupId>lookup</groupId>

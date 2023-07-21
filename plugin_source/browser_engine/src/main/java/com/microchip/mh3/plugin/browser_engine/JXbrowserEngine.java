@@ -118,12 +118,15 @@ public class JXbrowserEngine {
 
     public static void deleteBrowserTempFiles() {
         usedJXBrowserDirectories.clear();
-        File[] files = Paths.get(parentPath).toFile().listFiles();
-        for (File file : files) {
-            if (checkName(file.getName())) {
-                continue;
+        File fileLocation = Paths.get(parentPath).toFile();
+        if (fileLocation.exists()) {
+            File[] files = fileLocation.listFiles();
+            for (File file : files) {
+                if (checkName(file.getName())) {
+                    continue;
+                }
+                deleteDirectory(file);
             }
-            deleteDirectory(file);
         }
     }
 
