@@ -46,7 +46,7 @@ public final class JavaConnector {
         agent = new DefaultDatabaseAgent();
         agent.addStateListener(this::stateChanged);
         agent.addComponentStateListener(this::componentActivated);
-        agent.addComponentStateListener(this::componentActivated);
+        agent.addComponentStateListener(this::componentDeActivated);
     }
 
     @JsAccessible
@@ -64,7 +64,7 @@ public final class JavaConnector {
         }
         return null;
     }
-    
+
     @JsAccessible
     public Object getSymbolDataByDisplayMode(String componentId, String symbolId, String displayMode) {
         try {
@@ -89,7 +89,7 @@ public final class JavaConnector {
         }
         return null;
     }
-    
+
     @JsAccessible
     public String getSymbolValuesByDisplayMode(String componentId, String symbolId, String displayMode) {
         try {
@@ -113,7 +113,7 @@ public final class JavaConnector {
     public Object getSymbolDefaultValue(String componentId, String symbolId) {
         return DatabaseAccess.getSymbolDefaultValue(pluginConfig.pluginName(), componentId, symbolId, "");
     }
-    
+
     @JsAccessible
     public Object getSymbolDefaultValueByDisplayMode(String componentId, String symbolId, String displayMode) {
         return DatabaseAccess.getSymbolDefaultValue(pluginConfig.pluginName(), componentId, symbolId, displayMode);
@@ -241,13 +241,41 @@ public final class JavaConnector {
     }
 
     public void componentActivated(Event event) {
-        Component c = ((DatabaseEvents.ComponentActivatedEvent) event).component;
-        browserObject.getFrame().executeJavaScript("ComponentActivated(\"" + c.getID() + "\")");
+        try {
+            if (event instanceof DatabaseEvents.ComponentActivatedEvent) {
+                Component c = ((DatabaseEvents.ComponentActivatedEvent) event).component;
+                executorService.execute(() -> {
+                    try {
+                        browserObject.getFrame().executeJavaScript("ComponentActivated(\"" + c.getID() + "\")");
+                    } catch (Exception e) {
+                        Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component activation status call to React failed: " + c.getID(), Log.Level.USER);
+                        Log.printException(e);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component activation status call to React failed", Log.Level.USER);
+            Log.printException(e);
+        }
     }
 
     public void componentDeActivated(Event event) {
-        Component c = ((DatabaseEvents.ComponentDeactivatedEvent) event).component;
-        browserObject.getFrame().executeJavaScript("ComponentDeActivated(\"" + c.getID() + "\")");
+        try {
+            if (event instanceof DatabaseEvents.ComponentDeactivatedEvent) {
+                Component c = ((DatabaseEvents.ComponentDeactivatedEvent) event).component;
+                executorService.execute(() -> {
+                    try {
+                        browserObject.getFrame().executeJavaScript("ComponentDeActivated(\"" + c.getID() + "\")");
+                    } catch (Exception e) {
+                        Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component deActivation status call to React failed: " + c.getID(), Log.Level.USER);
+                        Log.printException(e);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component deActivation status call to React failed", Log.Level.USER);
+            Log.printException(e);
+        }
     }
 
     public void clearJavaConnectorObjects() {

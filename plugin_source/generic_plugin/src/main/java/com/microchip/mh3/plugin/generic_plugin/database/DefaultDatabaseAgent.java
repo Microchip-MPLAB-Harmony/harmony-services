@@ -6,6 +6,7 @@
 package com.microchip.mh3.plugin.generic_plugin.database;
 
 import com.microchip.h3.database.DatabaseEvents;
+import com.microchip.h3.database.DatabaseEvents.SymbolStateChangedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolValueChangedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolVisualChangedEvent;
 import com.microchip.h3.database.component.FrameworkComponent;
@@ -73,7 +74,7 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
     class GlobalSymbolEventHandler implements EventHandler {
 
         private final Class[] FILTER = {SymbolValueChangedEvent.class,
-            SymbolVisualChangedEvent.class, DatabaseEvents.ComponentActivatedEvent.class,
+            SymbolVisualChangedEvent.class, SymbolStateChangedEvent.class, DatabaseEvents.ComponentActivatedEvent.class,
             DatabaseEvents.ComponentDeactivatedEvent.class};
 
         @Override
@@ -93,6 +94,9 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
                 notifySymbolChanged(s);
             } else if (evt instanceof SymbolVisualChangedEvent) {
                 Symbol s = ((SymbolVisualChangedEvent) evt).sym;
+                notifySymbolChanged(s);
+            } else if (evt instanceof SymbolStateChangedEvent) {
+                Symbol s = ((SymbolStateChangedEvent) evt).sym;
                 notifySymbolChanged(s);
             } else if (evt instanceof DatabaseEvents.ComponentActivatedEvent) {
                 notifyComponentStateChanged(evt);
@@ -116,7 +120,7 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
         if (componentStateChangeListener == null) {
             throw new NullPointerException();
         }
-        if(!componentStateChangeListener.contains(c)){
+        if (!componentStateChangeListener.contains(c)) {
             this.componentStateChangeListener.add(c);
         }
     }
