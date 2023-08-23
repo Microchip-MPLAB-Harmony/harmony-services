@@ -55,9 +55,20 @@ public final class JavaConnector {
     }
 
     @JsAccessible
-    public Object getSymbolData(String componentId, String symbolId) {
+    public String getSymbolData(String componentId, String symbolId) {
         try {
-            return DatabaseAccess.getParameterValue(componentId, symbolId);
+            return DatabaseAccess.getParameterValue(componentId, symbolId).toString();
+        } catch (Exception e) {
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
+            Log.printException(e);
+        }
+        return null;
+    }
+    
+    @JsAccessible
+    public Object getParameterValue(String componentId, String symbolId) {
+        try {
+            return DatabaseAccess.getParameterValue(componentId, symbolId).toString();
         } catch (Exception e) {
             Log.write(pluginConfig.pluginName(), Log.Severity.Error, "Symbol value null : " + symbolId, Log.Level.USER);
             Log.printException(e);
