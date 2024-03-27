@@ -7,6 +7,8 @@ import com.microchip.h3.database.symbol.FloatSymbol;
 import com.microchip.h3.database.symbol.IntegerSymbol;
 import com.microchip.h3.database.symbol.KeyValueSetSymbol;
 import com.microchip.h3.database.symbol.StringSymbol;
+import com.microchip.h3.database.symbol.LongSymbol;
+import com.microchip.h3.database.symbol.HexSymbol;
 import com.microchip.h3.database.symbol.Symbol;
 import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.SymbolAgent;
@@ -41,6 +43,10 @@ public class SymbolDtoFactory {
                 return new ComboSymbolDto((ComboSymbol) symbol);
             case "StringSymbol":
                 return new StringSymbolDto((StringSymbol) symbol);
+            case "LongSymbol":
+                return new LongSymbolDto((LongSymbol) symbol);
+            case "HexSymbol":
+                return new HexSymbolDto((HexSymbol) symbol);
             default:
                 Log.write("SymbolDtoFactory", Log.Severity.Info, "Symbol Type is unknown : " + symbol.getClass().getSimpleName(), Log.Level.DEBUG);
                 return null;
@@ -68,6 +74,10 @@ public class SymbolDtoFactory {
                             return new ComboSymbolDto((ComboSymbol) e);
                         case "StringSymbol":
                             return new StringSymbolDto((StringSymbol) e);
+                        case "LongSymbol":
+                            return new LongSymbolDto((LongSymbol) e);
+                        case "HexSymbol":
+                            return new HexSymbolDto((HexSymbol) e);
                         default:
                             Log.write("SymbolDtoFactory", Log.Severity.Info, "Symbol Type is unknown : " + e.getClass().getSimpleName(), Log.Level.DEBUG);
                             return null;

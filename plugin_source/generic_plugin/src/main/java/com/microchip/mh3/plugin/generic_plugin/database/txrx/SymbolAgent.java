@@ -11,6 +11,7 @@ import com.microchip.h3.database.symbol.ConfigSymbol;
 import com.microchip.h3.database.symbol.FloatSymbol;
 import com.microchip.h3.database.symbol.KeyValueSetSymbol;
 import com.microchip.h3.database.symbol.LongSymbol;
+import com.microchip.h3.database.symbol.HexSymbol;
 import com.microchip.h3.database.symbol.StringSymbol;
 import com.microchip.h3.database.symbol.Symbol;
 import com.microchip.h3.database.symbol.VisibleSymbol;
@@ -138,6 +139,23 @@ public class SymbolAgent {
     public Long getLongSymbolValue(String componentID, String symbolID) {
         return findLongSymbolValue(componentID, symbolID)
                 .orElseThrow(() -> new RuntimeException("LongSymbol not found : componentID = " + componentID + ", Symbol ID = " + symbolID));
+    }
+    
+    //------------Hex Symbol----------
+    public Optional<HexSymbol> findHexSymbol(String componentId, String symbolId) {
+        return this.findSymbol(componentId, symbolId)
+                .filter(symbol -> symbol instanceof HexSymbol)
+                .map(symbol -> (HexSymbol) symbol);
+    }
+
+    public Optional<Long> findHexSymbolValue(String componentID, String symbolID) {
+        return this.<Long>findConfigSymbol(componentID, symbolID)
+                .map(ConfigSymbol<Long>::getValue);
+    }
+
+    public Long getHexSymbolValue(String componentID, String symbolID) {
+        return findHexSymbolValue(componentID, symbolID)
+                .orElseThrow(() -> new RuntimeException("HexSymbol not found : componentID = " + componentID + ", Symbol ID = " + symbolID));
     }
 
     //------------String Symbol----------

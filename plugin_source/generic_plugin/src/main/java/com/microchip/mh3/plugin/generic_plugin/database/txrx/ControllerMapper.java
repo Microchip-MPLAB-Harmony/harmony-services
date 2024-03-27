@@ -15,6 +15,8 @@ import com.microchip.mh3.plugin.generic_plugin.database.symbol.controller.ComboS
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.controller.CommentSymbolController;
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.controller.StringSymbolController;
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.controller.SymbolUtilController;
+import com.microchip.mh3.plugin.generic_plugin.database.symbol.controller.LongSymbolController;
+import com.microchip.mh3.plugin.generic_plugin.database.symbol.controller.HexSymbolController;
 import com.microchip.mh3.plugin.generic_plugin.gui.HtmlPluginConfig;
 import com.microchip.mh3.plugin.generic_plugin.database.plugin.PluginController;
 import java.lang.reflect.Method;
@@ -49,6 +51,8 @@ public class ControllerMapper {
         register(new LoggingController());
 
         register(new ShortNamesController());
+        register(new LongSymbolController());
+        register(new HexSymbolController());
 
         eventController = new EventController(transmitter);
         register(eventController);
