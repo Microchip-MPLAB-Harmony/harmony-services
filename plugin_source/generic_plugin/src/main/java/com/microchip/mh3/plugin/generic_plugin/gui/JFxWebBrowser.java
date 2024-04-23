@@ -5,11 +5,13 @@
  */
 package com.microchip.mh3.plugin.generic_plugin.gui;
 
-
 import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.browser_engine.GenericPackagePlugin;
 import com.microchip.mh3.plugin.browser_engine.JXbrowserEngine;
 import com.microchip.mh3.plugin.generic_plugin.database.ComponentService;
+import com.microchip.mh3.plugin.generic_plugin.database.txrx.Connector;
+import com.microchip.mh3.plugin.generic_plugin.database.txrx.JxBrowserConnector;
+import com.microchip.mh3.plugin.generic_plugin.database.txrx.Transceiver;
 import com.teamdev.jxbrowser.browser.Browser;
 import com.teamdev.jxbrowser.browser.callback.AlertCallback;
 import com.teamdev.jxbrowser.browser.callback.CreatePopupCallback;
@@ -21,6 +23,8 @@ import com.teamdev.jxbrowser.engine.Engine;
 import com.teamdev.jxbrowser.frame.Frame;
 import com.teamdev.jxbrowser.js.ConsoleMessage;
 import com.teamdev.jxbrowser.js.JsObject;
+import com.teamdev.jxbrowser.ui.KeyCode;
+import static com.teamdev.jxbrowser.ui.KeyCode.KEY_CODE_F5;
 import com.teamdev.jxbrowser.ui.event.KeyPressed;
 import com.teamdev.jxbrowser.ui.event.MouseWheel;
 import com.teamdev.jxbrowser.view.javafx.BrowserView;
@@ -30,6 +34,7 @@ import java.io.IOException;
 import static java.lang.String.format;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
@@ -37,47 +42,50 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-
 public final class JFxWebBrowser extends Region {
 
      /** for communication from the Javascript engine. */
     private  JavaConnector javaConnector = null;
-    
+
+    private Transceiver transceiver;
+
     private  Engine engine = null ;
     private  BrowserView browserView;
     private  Browser browser;
     private final HtmlPluginConfig pluginConfig;
-    
+
     public JXbrowserEngine  browserEngine;
-    
+
 
     public Browser getBrowser() {
         return browser;
     }
-    
+
     JsObject webWindow;
     Stage parentStage;
-    
+
     public Frame frame;
-   
+
     double z = 0.25;
     int nMinimumZoomFactor = 0;
     Tooltip toolTip = new Tooltip();
-    
+
     ZoomLevel zoomlevelArrays [] = new ZoomLevel[]{ZoomLevel.P_75, ZoomLevel.P_80, ZoomLevel.P_90, ZoomLevel.P_100,
         ZoomLevel.P_110, ZoomLevel.P_125,  ZoomLevel.P_150, ZoomLevel.P_175, ZoomLevel.P_200};
     int currentZoomLevelIndex = 3;
 
     public JFxWebBrowser(Stage parentStage, String url, HtmlPluginConfig pluginConfig) {
         this.pluginConfig = pluginConfig;
+//        this.transceiver = new Transceiver(this);
+
         try {
             this.parentStage = parentStage;
             javaConnector = new JavaConnector(pluginConfig, parentStage, this);
             browserEngine = new JXbrowserEngine();
             browser = browserEngine.getBrowserInstance(pluginConfig.pluginName(), pluginConfig.debugEnabled());
-            if(pluginConfig.debugEnabled()){
-                Log.write(pluginConfig.pluginName(), Log.Severity.Info, "JXBrowser remote debugging port : " + browser.engine().options().remoteDebuggingPort() , Log.Level.USER);
-                Log.write(pluginConfig.pluginName(), Log.Severity.Info, "To debug "+pluginConfig.pluginName()+" make sure the plugin is "
+            if (pluginConfig.debugEnabled()) {
+                Log.write(pluginConfig.pluginName(), Log.Severity.Info, "JXBrowser remote debugging port : " + browser.engine().options().remoteDebuggingPort(), Log.Level.USER);
+                Log.write(pluginConfig.pluginName(), Log.Severity.Info, "To debug " + pluginConfig.pluginName() + " make sure the plugin is "
                         + "launched and now load \"chrome://inspect\" in google chrome and wait for few seconds then click on inspect link"
                         + " (under remote target) to debug.", Log.Level.USER);
             }
@@ -92,6 +100,12 @@ public final class JFxWebBrowser extends Region {
                 jsObject.putProperty("javaConnector", javaConnector);
                 jsObject.putProperty("pluginConfig", pluginConfig);
                 jsObject.putProperty("componentService", ComponentService.singleton());
+                if (this.transceiver != null) {
+                    this.transceiver.destroy();
+                }
+                this.transceiver = new Transceiver(this::createConnector);
+                this.transceiver.addPluginConfig(pluginConfig);
+//                jsObject.putProperty("serverJxBrowserConnector", transceiver.getJxBrowserConnector());
                 return InjectJsCallback.Response.proceed();
             });
 
@@ -107,12 +121,18 @@ public final class JFxWebBrowser extends Region {
 
             browser.set(PressKeyCallback.class, params -> {
                 KeyPressed event = params.event();
-                if (event.keyCode().equals(com.teamdev.jxbrowser.ui.KeyCode.KEY_CODE_F5)) {
-                    browser.navigation().reload();
+                switch (event.keyCode()) {
+                    case KEY_CODE_F5:
+                        browser.navigation().reload();
+                        break;
+                    case KEY_CODE_NUMPAD0:
+                        if (event.keyModifiers().isControlDown()) {
+                            ZooMInZoomOut(0);
+                        }
                 }
                 return PressKeyCallback.Response.proceed();
             });
-            
+
             browser.set(CreatePopupCallback.class, (params) -> {
                 openWebDirectory(params.targetUrl());
                 return CreatePopupCallback.Response.suppress();
@@ -138,7 +158,7 @@ public final class JFxWebBrowser extends Region {
                 Log.write(pluginConfig.pluginName(), Log.Severity.Info, message, Log.Level.USER);
                 tell.ok();
             });
-            
+
             browser.zoom().level(zoomlevelArrays[currentZoomLevelIndex]);
 
             browser.on(ConsoleMessageReceived.class, this::log);
@@ -156,25 +176,26 @@ public final class JFxWebBrowser extends Region {
 
         final String MARKER = "[MH3]";
         String message = consoleMessage.message();
-        Log.Level harmonyLogLevel = Log.Level.DEBUG;
         if (message.startsWith(MARKER)) {
             message = message.substring(MARKER.length());
-            harmonyLogLevel = Log.Level.USER;
+        } else {
+            return;
         }
 
         switch(consoleMessage.level()) {
             case CONSOLE_MESSAGE_LEVEL_UNSPECIFIED:     // 0
-            case DEBUG:         // 1
             case LOG:           // 2
-                Log.write(pluginConfig.pluginName(), Log.Severity.Info, message, harmonyLogLevel);
+                Log.write(pluginConfig.pluginName(), Log.Severity.Info, message, Log.Level.USER);
                 return;
             case WARNING:       // 3
-                Log.write(pluginConfig.pluginName(), Log.Severity.Warning, message, harmonyLogLevel);
+                Log.write(pluginConfig.pluginName(), Log.Severity.Warning, message, Log.Level.USER);
                 return;
             case LEVEL_ERROR:   // 4
-            case VERBOSE:       // 5
-                Log.write(pluginConfig.pluginName(), Log.Severity.Error, message, harmonyLogLevel);
+                Log.write(pluginConfig.pluginName(), Log.Severity.Error, message, Log.Level.USER);
                 return;
+            case DEBUG:         // 1
+            case VERBOSE:       // 5
+                Log.write(pluginConfig.pluginName(), Log.Severity.Info, message, Log.Level.DEBUG);
             default:
                 return;
         }
@@ -202,20 +223,24 @@ public final class JFxWebBrowser extends Region {
         double h = getHeight();
         layoutInArea(browserView, 0, 0, w, h, 0, HPos.CENTER, VPos.CENTER);
     }
-    
-     public BrowserView getWebView() {
+
+    public BrowserView getWebView() {
         return browserView;
     }
 
     public Engine getWebEngine() {
         return engine;
     }
-    
+
     public Frame getFrame(){
         return frame;
     }
-    
+
     public void ZooMInZoomOut(double value) {
+        if (value == 0) {
+            browser.zoom().level(ZoomLevel.P_100);
+            return;
+        }
         if (value > 0) {
             if(currentZoomLevelIndex<zoomlevelArrays.length-1){
                 currentZoomLevelIndex++;
@@ -228,7 +253,7 @@ public final class JFxWebBrowser extends Region {
             browser.zoom().level(zoomlevelArrays[currentZoomLevelIndex]);
         }
     }
-    
+
 //    private void addStageListners(){
 //        parentStage.widthProperty().addListener((obs, oldVal, newVal) -> {
 //            ZooMInZoomOut(newVal.doubleValue()- oldVal.doubleValue());
@@ -238,14 +263,14 @@ public final class JFxWebBrowser extends Region {
 //             ZooMInZoomOut(newVal.doubleValue()- oldVal.doubleValue());
 //        });
 //    }
-    
     public void clearObjects() {
+        this.transceiver.destroy();
         try {
             if(javaConnector!=null){
                 javaConnector.clearJavaConnectorObjects();
                 javaConnector = null;
             }
-            
+
             if(browser!=null){
                 browser.close();
                 browserEngine.disPoseBrowserEvent(pluginConfig.pluginName());
@@ -253,7 +278,7 @@ public final class JFxWebBrowser extends Region {
                 browserEngine = null;
                 browser = null;
             }
-           
+
             if(browserView!=null){
                 browserView.getChildren().clear();
                 browserView = null;
@@ -263,5 +288,16 @@ public final class JFxWebBrowser extends Region {
             Log.printException(ex);
         }
 
+    }
+
+    public Connector createConnector(Consumer<String> receiver) {
+        JxBrowserConnector jxBrowserConnector = new JxBrowserConnector(receiver, this);
+        JsObject window = frame.executeJavaScript("window");
+        if (window == null) {
+            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "JS object not found : window");
+            throw new IllegalStateException("JS object not found : window");
+        }
+        window.putProperty("serverJxBrowserConnector", jxBrowserConnector);
+        return jxBrowserConnector;
     }
 }

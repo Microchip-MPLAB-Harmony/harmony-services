@@ -4,10 +4,12 @@ import com.microchip.h3.database.component.ComponentPluginConfiguration;
 import com.microchip.mh3.plugin.packageplugin.PluginConfiguration;
 import com.teamdev.jxbrowser.js.JsAccessible;
 import java.util.Map;
+import java.util.UUID;
 
 @JsAccessible
 public class HtmlPluginConfig {
 
+    private final String pluginInstanceId;
     private final String pluginName;
     private final String pluginID;
     private final String mainHtmlPath;
@@ -16,6 +18,7 @@ public class HtmlPluginConfig {
     private final Map<String, Object> initArgs;
 
     public HtmlPluginConfig(ComponentPluginConfiguration cpc) {
+        this.pluginInstanceId = UUID.randomUUID().toString();
         this.pluginID = cpc.getUiManagerID();
         this.initArgs = cpc.getArgs();
         this.pluginName = readFromInitArgs(initArgs, "plugin_name");
@@ -25,6 +28,7 @@ public class HtmlPluginConfig {
     }
 
     public HtmlPluginConfig(PluginConfiguration pc) {
+        this.pluginInstanceId = UUID.randomUUID().toString();
         this.pluginID = pc.getPluginID();
         this.initArgs = pc.getInitArgs();
         this.pluginName = pc.getName();
@@ -37,25 +41,30 @@ public class HtmlPluginConfig {
         Object value = initArgs.get(key);
         return value != null ? (String) value : "";
     }
-    
+
     private static boolean readBooleanFromInitArgs(Map<String, Object> initArgs, String key) {
         Object value = initArgs.get(key);
         return value != null ? Boolean.parseBoolean(value.toString()) : false;
     }
-    
+
     @JsAccessible
-    public boolean debugEnabled(){
+    public boolean debugEnabled() {
         return debugEnabled;
     }
-    
+
     @JsAccessible
-    public boolean localServerEnabled(){
+    public boolean localServerEnabled() {
         return localServerEnabled;
     }
 
     @JsAccessible
     public String pluginName() {
         return pluginName;
+    }
+
+    @JsAccessible
+    public String pluginInstanceId() {
+        return pluginInstanceId;
     }
 
     @JsAccessible

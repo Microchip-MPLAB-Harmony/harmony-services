@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="short-names" type="shortNames"/>
+
+  <xs:element name="value" type="value"/>
+
+  <xs:element name="value-group" type="valueGroup"/>
+
+  <xs:complexType name="shortNames">
+    <xs:sequence>
+      <xs:element ref="value-group" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="valueGroup">
+    <xs:sequence>
+      <xs:element ref="value" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string"/>
+    <xs:attribute name="label" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="value">
+    <xs:sequence/>
+    <xs:attribute name="caption" type="xs:string"/>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+</xs:schema>
+

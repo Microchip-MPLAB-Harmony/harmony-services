@@ -23,14 +23,14 @@
             <artifactId>Harmony3Library</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${user.home}/.mcc/libraries/Harmony3Library_v1.3.2/Harmony3Library.jar</systemPath>
+            <systemPath>${user.home}/.mcc/libraries/Harmony3Library_v1.5.2-b/Harmony3Library.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>core</groupId>
-            <artifactId>core</artifactId>
+            <groupId>mcc</groupId>
+            <artifactId>mcc</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${user.home}/.mcc/cores/5.5.7/core.jar</systemPath>
+            <systemPath>${user.home}/.mcc/cores/5.8.0-2024_05_07_nightly/core.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>jxbrowser</groupId>
@@ -52,12 +52,28 @@
             <version>1.18.16</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+            <scope>provided</scope>
+        </dependency>
       
     </dependencies>
     
     <build>
         <finalName>generic_plugin</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -111,7 +127,7 @@
                                 <property name="archive.includes" value="${project.build.finalName}.${project.packaging} lib/*"/>
                                 <zip basedir="${project.build.directory}" destfile="${final.name}.zip" includes="${archive.includes}" />
                                 <!--<unzip src="${final.name}.zip" dest="${env.HARMONY3_DIR}/harmony-services/plugin/" />-->
-                                <unzip src="${final.name}.zip" dest="${env.HARMONY3_DIR}/harmony-services/plugins/" />
+                                <unzip src="${final.name}.zip" dest="../../plugins/" />
                             </target>
                         </configuration>
                     </execution>

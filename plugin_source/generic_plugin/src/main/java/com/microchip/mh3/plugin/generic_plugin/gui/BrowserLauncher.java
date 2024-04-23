@@ -31,10 +31,10 @@ public class BrowserLauncher  {
 
     public Scene getScene(String url) {
         if(this.pluginConfig.localServerEnabled()){
-            browser = new JFxWebBrowser(stage,"http://localhost:3000/", this.pluginConfig);
+            browser = new JFxWebBrowser(stage,"http://localhost:3000/" + "?pluginInstanceId=" + pluginConfig.pluginInstanceId(), this.pluginConfig);
         }else{
             localHost = "http://localhost:"+System.getProperty("HARMONY_SERVER_PORT")+"/";
-            browser = new JFxWebBrowser(stage, localHost + url, this.pluginConfig);
+            browser = new JFxWebBrowser(stage, localHost + url + "?pluginInstanceId=" + pluginConfig.pluginInstanceId(), this.pluginConfig);
         }
         scene = new Scene(browser);
         return scene;
