@@ -23,7 +23,8 @@ import java.util.Optional;
 
 public class JXbrowserEngine {
 
-    String mccJXBrowserLicenseKey = "1BNDIEOFAYZM808B87BLSR7SM305VUHKEDWRYFF0E60GWUZPK3O6UXUVK8T7RLAESEAGM5"; // This will be used only in MCC Standalone mode
+    String[] mccJXBrowserLicenseKeys = {"1BNDIEOFAYZM808B87BLSR7SM305VUHKEDWRYFF0E60GWUZPK3O6UXUVK8T7RLAESEAGM5", 
+        "XX76YAAC00SJXZWIK48B4LF3II254JQ35936J950M7UTCXMLAVM5DVA9X3LRJ5N8UT"}; // This will be used only in MCC Standalone mode
     boolean IsMPLABXMode = false;
     Engine standAloneEngine;
 
@@ -107,13 +108,19 @@ public class JXbrowserEngine {
             builder.remoteDebuggingPort(getDebugPort());
         }
 
-        if (mccJXBrowserLicenseKey != null) {
-            builder.licenseKey(mccJXBrowserLicenseKey);
+        for (String licenseKey : mccJXBrowserLicenseKeys) {
+            builder.licenseKey(licenseKey);
+            try {
+                standAloneEngine = Engine.newInstance(
+                        builder
+                                .build());
+                if (standAloneEngine != null) {
+                    return standAloneEngine.newBrowser();
+                }
+            } catch (Exception ex) {
+            }
         }
-        standAloneEngine = Engine.newInstance(
-                builder
-                        .build());
-        return standAloneEngine.newBrowser();
+        return null;
     }
 
     public static void deleteBrowserTempFiles() {
