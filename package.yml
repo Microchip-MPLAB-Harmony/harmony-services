@@ -1,0 +1,10 @@
+package:
+  format-version: "1.0.0"
+  name: "harmony-services"
+  version: "v1.3.3"
+  type: "tools"
+  status: "production"
+  required: true
+
+  dependencies:
+    
