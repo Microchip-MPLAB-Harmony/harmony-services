@@ -1,4 +1,18 @@
-# Harmony Services Release Notes
+# MPLAB® Harmony Services Release Notes
+
+## MPLAB® Harmony Services Release v1.3.3
+
+### Bug fixes
+- MPLAB® Harmony plugin launch issue in MCC Standalone mode fixed.
+- Added package yml file to harmony-services repository.
+
+### Known Issues
+- None
+
+### Development Tools
+- [MPLAB® X IDE v6.20 or Later](https://www.microchip.com/mplab/mplab-x-ide)
+- [MPLAB® Code Configurator (MCC) v5.5.1, MPLAB® X plugin](https://www.microchip.com/en-us/tools-resources/configure/mplab-code-configurator)
+- [Harmony3Librabry v1.5.1 or Later](https://www.npmjs.com/package/@mchp-mcc/harmony). Obtained from MCC Content Manager.
 
 ## Harmony Services Release v1.3.2
 
