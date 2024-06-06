@@ -3,6 +3,8 @@ package com.microchip.mh3.plugin.generic_plugin.database.event;
 import com.google.gson.JsonObject;
 import com.microchip.h3.database.DatabaseEvents.ComponentActivatedEvent;
 import com.microchip.h3.database.DatabaseEvents.ComponentDeactivatedEvent;
+import com.microchip.h3.database.DatabaseEvents.ComponentSelectedEvent;
+import com.microchip.h3.database.DatabaseEvents.ComponentDeselectedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolStateChangedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolValueChangedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolVisualChangedEvent;
@@ -40,6 +42,9 @@ public class EventController {
         // component event handlers
         this.eventJet.addEventListener(ComponentActivatedEvent.class, eventDtoFactory::handle);
         this.eventJet.addEventListener(ComponentDeactivatedEvent.class, eventDtoFactory::handle);
+        
+        this.eventJet.addEventListener(ComponentSelectedEvent.class, eventDtoFactory::handle);
+        this.eventJet.addEventListener(ComponentDeselectedEvent.class, eventDtoFactory::handle);
     }
 
     public boolean isEventMatches(Class<? extends Event> eventClass) {

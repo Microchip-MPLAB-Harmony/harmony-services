@@ -25,7 +25,12 @@ public class RequestHandler {
         try {
             return (Response) method.invoke(controllerObject, fetchArgs(request));
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Log.write("Generic Plugin", Log.Severity.Error, "Exception while calling request handler. " + ex.getMessage() + ".\nRequest: " + request);
+            Log.write("Generic Plugin1", Log.Severity.Error, "Exception while calling request handler. " + ex.getMessage() + ".\nRequest: " + request);
+            Log.printException(ex);
+            return Response.error(ex.getMessage(), request);
+        } catch (Exception ex) {
+            Log.write("Generic Plugin2", Log.Severity.Error, "Exception while calling request handler. " + ex.getMessage() + ".\nRequest: " + request);
+            Log.printException(ex);
             return Response.error(ex.getMessage(), request);
         }
     }
@@ -41,13 +46,17 @@ public class RequestHandler {
 
                         JsonElement element = data.get(parameter.getName());
                         if (element == null) {
-                            throw new IllegalArgumentException(
-                                    "Argument Not Found: " + parameter.getName() + "\n"
-                                    + "Request Format:\n"
-                                    + getRequestFormat()
-                            );
+                            if (parameter.isAnnotationPresent(OptionalArg.class)) {
+                                return null;
+                            } else {
+                                throw new IllegalArgumentException(
+                                        "Argument Not Found: " + parameter.getName() + "\n"
+                                        + "Request Format:\n"
+                                        + getRequestFormat()
+                                );
+                            }
                         }
-                        return new Gson().fromJson(element, parameter.getType());
+                        return GSON.fromJson(element, parameter.getType());
                     })
                     .toArray();
         } catch (ArrayIndexOutOfBoundsException ex) {
@@ -63,7 +72,7 @@ public class RequestHandler {
                 + "method: \"" + method.getName() + "\"\n"
                 + "data: {"
                 + Arrays.stream(method.getParameters(), 1, method.getParameterCount())
-                        .map(e -> e.getName() + ": " + e.getType().getSimpleName())
+                        .map(e -> e.getName() + ": " + e.getType().getSimpleName() + (e.isAnnotationPresent(OptionalArg.class) ? "     (Optional)" : ""))
                         .collect(Collectors.joining("\n\t", "\n\t", "\n"))
                 + "}";
     }

@@ -1,11 +1,15 @@
 package com.microchip.mh3.plugin.generic_plugin.database.event;
 
+import com.microchip.h3.database.DatabaseEvents;
 import com.microchip.h3.database.DatabaseEvents.ComponentActivatedEvent;
 import com.microchip.h3.database.DatabaseEvents.ComponentDeactivatedEvent;
+import com.microchip.h3.database.DatabaseEvents.ComponentSelectedEvent;
+import com.microchip.h3.database.DatabaseEvents.ComponentDeselectedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolStateChangedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolValueChangedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolVisualChangedEvent;
 import com.microchip.mh3.log.Log;
+import com.microchip.mh3.plugin.generic_plugin.database.component.dto.ComponentDto;
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.dto.SymbolDtoFactory;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Response;
 import java.util.function.Consumer;
@@ -68,6 +72,30 @@ public class EventDtoFactory {
     }
 
     public void handle(ComponentDeactivatedEvent event) {
+        Response response = Response.event(event);
+
+        EventDto eventDto = EventDto.builder()
+                .eventName(event.getClass().getSimpleName())
+                .component(new ComponentDto(event.component))
+                .build();
+
+        response.setData(eventDto);
+        transmitter.accept(response);
+    }
+    
+    public void handle(ComponentSelectedEvent event) {
+        Response response = Response.event(event);
+
+        EventDto eventDto = EventDto.builder()
+                .eventName(event.getClass().getSimpleName())
+                .component(new ComponentDto(event.component))
+                .build();
+
+        response.setData(eventDto);
+        transmitter.accept(response);
+    }
+    
+    public void handle(ComponentDeselectedEvent event) {
         Response response = Response.event(event);
 
         EventDto eventDto = EventDto.builder()

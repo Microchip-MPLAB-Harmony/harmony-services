@@ -1,5 +1,6 @@
 package com.microchip.mh3.plugin.generic_plugin.database.event;
 
+import com.microchip.mh3.plugin.generic_plugin.database.component.dto.ComponentDto;
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.dto.SymbolDto;
 import lombok.Builder;
 import lombok.Getter;

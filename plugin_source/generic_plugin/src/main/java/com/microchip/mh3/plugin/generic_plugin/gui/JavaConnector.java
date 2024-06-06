@@ -252,41 +252,41 @@ public final class JavaConnector {
     }
 
     public void componentActivated(Event event) {
-        try {
-            if (event instanceof DatabaseEvents.ComponentActivatedEvent) {
-                Component c = ((DatabaseEvents.ComponentActivatedEvent) event).component;
-                executorService.execute(() -> {
-                    try {
-                        browserObject.getFrame().executeJavaScript("ComponentActivated(\"" + c.getID() + "\")");
-                    } catch (Exception e) {
-                        Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component activation status call to React failed: " + c.getID(), Log.Level.USER);
-                        Log.printException(e);
-                    }
-                });
-            }
-        } catch (Exception e) {
-            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component activation status call to React failed", Log.Level.USER);
-            Log.printException(e);
-        }
+//        try {
+//            if (event instanceof DatabaseEvents.ComponentActivatedEvent) {
+//                Component c = ((DatabaseEvents.ComponentActivatedEvent) event).component;
+//                executorService.execute(() -> {
+//                    try {
+//                        browserObject.getFrame().executeJavaScript("ComponentActivated(\"" + c.getID() + "\")");
+//                    } catch (Exception e) {
+//                        Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component activation status call to React failed: " + c.getID(), Log.Level.USER);
+//                        Log.printException(e);
+//                    }
+//                });
+//            }
+//        } catch (Exception e) {
+//            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component activation status call to React failed", Log.Level.USER);
+//            Log.printException(e);
+//        }
     }
 
     public void componentDeActivated(Event event) {
-        try {
-            if (event instanceof DatabaseEvents.ComponentDeactivatedEvent) {
-                Component c = ((DatabaseEvents.ComponentDeactivatedEvent) event).component;
-                executorService.execute(() -> {
-                    try {
-                        browserObject.getFrame().executeJavaScript("ComponentDeActivated(\"" + c.getID() + "\")");
-                    } catch (Exception e) {
-                        Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component deActivation status call to React failed: " + c.getID(), Log.Level.USER);
-                        Log.printException(e);
-                    }
-                });
-            }
-        } catch (Exception e) {
-            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component deActivation status call to React failed", Log.Level.USER);
-            Log.printException(e);
-        }
+//        try {
+//            if (event instanceof DatabaseEvents.ComponentDeactivatedEvent) {
+//                Component c = ((DatabaseEvents.ComponentDeactivatedEvent) event).component;
+//                executorService.execute(() -> {
+//                    try {
+//                        browserObject.getFrame().executeJavaScript("ComponentDeActivated(\"" + c.getID() + "\")");
+//                    } catch (Exception e) {
+//                        Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component deActivation status call to React failed: " + c.getID(), Log.Level.USER);
+//                        Log.printException(e);
+//                    }
+//                });
+//            }
+//        } catch (Exception e) {
+//            Log.write(pluginConfig.pluginName(), Log.Severity.Error, "component deActivation status call to React failed", Log.Level.USER);
+//            Log.printException(e);
+//        }
     }
 
     public void clearJavaConnectorObjects() {
