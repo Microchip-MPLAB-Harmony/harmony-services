@@ -1,5 +1,6 @@
 package com.microchip.mh3.plugin.generic_plugin.database.symbol.controller;
 
+import com.microchip.h3.database.symbol.ConfigSymbol;
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.dto.SymbolDto;
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.dto.SymbolDtoFactory;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Request;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
+import java.util.stream.Stream;
 
 @ControllerPath("SymbolUtil")
 public class SymbolUtilController {
@@ -68,6 +70,18 @@ public class SymbolUtilController {
                     return Response.success(attributes);
                 })
                 .orElse(Response.error("Symbol Not Found : id or type does not match", request));
+    }
+
+    @ControllerMethod
+    public Response clearUserValue(Request request, String componentId, String[] symbolIds) {
+
+        Stream.of(symbolIds)
+                .map(symbolId -> symbolAgent.findConfigSymbol(componentId, symbolId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(ConfigSymbol::clearUserValue);
+
+        return Response.success();
     }
 
 }

@@ -59,8 +59,6 @@ public class ControllerMapper {
 
         pluginController = new PluginController();
         register(pluginController);
-
-        printApiDocumentation();
     }
 
     private void register(Object controllerObject) {

@@ -23,7 +23,6 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
     EventHandler eventHandler;
 
     private final ArrayList<String> componentIdList = new ArrayList<>();
-    private int componentIdErrorCount = 0;
 
     /*------------------------- Symbol Listener ---------------------------*/
     private StateChangeListener stateListener = null;
@@ -55,13 +54,6 @@ public class DefaultDatabaseAgent implements DatabaseAgent {
         if (componentIdList.contains(component.getID())) {
             stateListener.stateChanged(symbol);
             return;
-        }
-        if (componentIdList.isEmpty()) {
-            if (componentIdErrorCount == 0) {
-                Log.write("Generic Plugin", Log.Severity.Error, "Listener component id is not configured for current launched plugin. "
-                        + "This will break symbol reverse communication.", Log.Level.USER);
-                componentIdErrorCount++;
-            }
         }
     }
 
