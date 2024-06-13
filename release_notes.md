@@ -1,5 +1,20 @@
 # MPLAB® Harmony Services Release Notes
 
+## MPLAB® Harmony Services Release v1.4.0
+
+### Bug fixes
+- Introduced new set of JSON based Async APIs for reading, writing Symbols and Observing it's events
+- Additionaly added support for Long and Hex Symbols.
+- Added API to reset(clear) user value of symbol(s)
+
+### Known Issues
+- None
+
+### Development Tools
+- [MPLAB® X IDE v6.20 or Later](https://www.microchip.com/mplab/mplab-x-ide)
+- [MPLAB® Code Configurator (MCC) v5.5.1, MPLAB® X plugin](https://www.microchip.com/en-us/tools-resources/configure/mplab-code-configurator)
+- [Harmony3Librabry v1.5.1 or Later](https://www.npmjs.com/package/@mchp-mcc/harmony). Obtained from MCC Content Manager.
+
 ## MPLAB® Harmony Services Release v1.3.4
 
 ### Bug fixes
