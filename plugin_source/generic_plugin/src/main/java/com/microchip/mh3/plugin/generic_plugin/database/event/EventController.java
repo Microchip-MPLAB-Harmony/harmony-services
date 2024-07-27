@@ -1,14 +1,13 @@
 package com.microchip.mh3.plugin.generic_plugin.database.event;
 
-import com.google.gson.JsonObject;
 import com.microchip.h3.database.DatabaseEvents.ComponentActivatedEvent;
 import com.microchip.h3.database.DatabaseEvents.ComponentDeactivatedEvent;
 import com.microchip.h3.database.DatabaseEvents.ComponentSelectedEvent;
 import com.microchip.h3.database.DatabaseEvents.ComponentDeselectedEvent;
+import com.microchip.h3.database.DatabaseEvents.ComponentAttachmentStateChanged;
 import com.microchip.h3.database.DatabaseEvents.SymbolStateChangedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolValueChangedEvent;
 import com.microchip.h3.database.DatabaseEvents.SymbolVisualChangedEvent;
-import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Request;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Response;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerPath;
@@ -18,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @ControllerPath("event")
@@ -45,6 +43,8 @@ public class EventController {
         
         this.eventJet.addEventListener(ComponentSelectedEvent.class, eventDtoFactory::handle);
         this.eventJet.addEventListener(ComponentDeselectedEvent.class, eventDtoFactory::handle);
+        
+        this.eventJet.addEventListener(ComponentAttachmentStateChanged.class, eventDtoFactory::handle);
     }
 
     public boolean isEventMatches(Class<? extends Event> eventClass) {

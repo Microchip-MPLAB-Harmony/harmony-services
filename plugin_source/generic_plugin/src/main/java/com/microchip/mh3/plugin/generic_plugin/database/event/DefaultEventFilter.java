@@ -28,6 +28,10 @@ public class DefaultEventFilter implements EventFilter {
             componentId = eventDto.getSymbol().getComponentId();
             symbolId = eventDto.getSymbol().getSymbolId();
         }
+        
+        if (eventDto.getAttachment() != null) {
+            componentId = eventDto.getAttachment().getComponentId();
+        }
     }
 
     public List<EventFilter> possibleFilters() {

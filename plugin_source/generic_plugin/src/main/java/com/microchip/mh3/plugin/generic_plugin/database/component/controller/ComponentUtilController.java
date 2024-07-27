@@ -1,22 +1,17 @@
 package com.microchip.mh3.plugin.generic_plugin.database.component.controller;
 
-import com.microchip.h3.database.component.FrameworkComponent;
 import com.microchip.h3.database.component.GroupComponent;
-import com.microchip.h3.database.component.attachment.ComponentAttachment;
+import com.microchip.h3.database.component.InstanceComponent;
 import com.microchip.mcc.harmony.Harmony3Library;
 import com.microchip.mcc.harmony.HarmonyPluginInterface;
-import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.database.component.dto.ComponentDto;
-import com.microchip.mh3.plugin.generic_plugin.database.symbol.dto.SymbolDto;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerMethod;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerPath;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Request;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Response;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.OptionalArg;
 import java.util.stream.Stream;
 
@@ -44,6 +39,7 @@ public class ComponentUtilController {
     @ControllerMethod
     public Response getAllComponents(Request request) {
         List<ComponentDto> components = Stream.concat(harmonyPluginInterface.getAvailableFrameworkComponents(), harmonyPluginInterface.getActiveComponents())
+                .filter(component -> !(component instanceof InstanceComponent))
                 .map(component -> new ComponentDto(component))
                 .collect(Collectors.toList());
 
@@ -62,6 +58,7 @@ public class ComponentUtilController {
     @ControllerMethod
     public Response getActiveComponents(Request request) {
         List<ComponentDto> components = harmonyPluginInterface.getActiveComponents()
+                .filter(component -> !(component instanceof InstanceComponent))
                 .map(component -> new ComponentDto(component))
                 .collect(Collectors.toList());
 
@@ -158,37 +155,6 @@ public class ComponentUtilController {
         } else {
             return Response.error("Unable to create Group Component : " + groupComponentId, request);
         }
-    }
-
-    @ControllerMethod
-    public Response connectAttachments(Request request,
-            String sourceComponentID,
-            String sourceAttachementID,
-            String destinationComponentID,
-            String destinationAttachementID) {
-        List<List<String>> connections = Arrays.asList(Arrays.asList(sourceComponentID, sourceAttachementID, destinationComponentID, destinationAttachementID));
-        harmonyPluginInterface.connectAttachments(connections, false);
-        return Response.success();
-    }
-
-    @ControllerMethod
-    public Response disconnenctAttachments(Request request,
-            String destinationComponentID,
-            String destinationAttachementID) {
-        List<List<String>> connection = Arrays.asList(Arrays.asList(destinationComponentID, destinationAttachementID));
-        harmonyPluginInterface.disconnenctAttachments(connection, false);
-        return Response.success();
-    }
-
-    @ControllerMethod
-    public Response satisfiableComponents(Request request, String componentId, String attachmentId) {
-        ComponentAttachment attachment = harmonyPluginInterface.getComponentByID(componentId).getAttachmentByID(attachmentId, null);
-
-        List<ComponentDto> components = Stream.concat(harmonyPluginInterface.getAvailableFrameworkComponents(), harmonyPluginInterface.getActiveComponents())
-                .filter(e -> e.canSatisfyAttachment(attachment))
-                .map(component -> new ComponentDto(component))
-                .collect(Collectors.toList());
-        return Response.success(components);
     }
 
 }

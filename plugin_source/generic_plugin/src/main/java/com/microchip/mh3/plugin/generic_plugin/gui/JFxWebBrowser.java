@@ -84,6 +84,10 @@ public final class JFxWebBrowser extends Region {
             browserEngine = new JXbrowserEngine();
             browser = browserEngine.getBrowserInstance(pluginConfig.pluginName(), pluginConfig.debugEnabled());
             if (pluginConfig.debugEnabled()) {
+                browser.devTools().remoteDebuggingUrl().ifPresent(urlPath -> {
+                    Log.write(pluginConfig.pluginName(), Log.Severity.Info, "Remote Debugging URL : " + urlPath);
+                });
+                browser.devTools().show();
                 Log.write(pluginConfig.pluginName(), Log.Severity.Info, "JXBrowser remote debugging port : " + browser.engine().options().remoteDebuggingPort(), Log.Level.USER);
                 Log.write(pluginConfig.pluginName(), Log.Severity.Info, "To debug " + pluginConfig.pluginName() + " make sure the plugin is "
                         + "launched and now load \"chrome://inspect\" in google chrome and wait for few seconds then click on inspect link"

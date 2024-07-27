@@ -18,7 +18,7 @@ public class ComponentAgent {
         return singleton;
     }
 
-    public ComponentAgent() {
+    private ComponentAgent() {
         this.harmonyPluginInterface = Harmony3Library.harmonyPluginInterface();
     }
 

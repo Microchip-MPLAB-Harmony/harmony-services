@@ -23,14 +23,14 @@
             <artifactId>Harmony3Library</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${user.home}/.mcc/libraries/Harmony3Library_v1.5.2-b/Harmony3Library.jar</systemPath>
+            <systemPath>${user.home}/.mcc/libraries/Harmony3Library_v1.5.2/Harmony3Library.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>mcc</groupId>
             <artifactId>mcc</artifactId>
             <scope>system</scope>
             <version>1.0</version>
-            <systemPath>${user.home}/.mcc/cores/5.8.0-2024_05_07_nightly/core.jar</systemPath>
+            <systemPath>${user.home}/.mcc/cores/5.7.0/core.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>jxbrowser</groupId>

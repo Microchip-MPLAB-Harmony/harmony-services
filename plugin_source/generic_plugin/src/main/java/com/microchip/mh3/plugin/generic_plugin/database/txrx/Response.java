@@ -58,6 +58,18 @@ public class Response {
         return response;
     }
     
+    public static Response error(String message, Object data, Request request) {
+        Response response = new Response();
+        response.status = "error";
+        
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("message", message);
+        attributes.put("data", data);
+        attributes.put("request", request);
+        response.data = attributes;
+        return response;
+    }
+    
     public static Response error(String message, String requestBody) {
         Response response = new Response();
         response.status = "error";

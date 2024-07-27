@@ -3,6 +3,7 @@ package com.microchip.mh3.plugin.generic_plugin.database.txrx;
 import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.commons.log.LoggingController;
 import com.microchip.mh3.plugin.generic_plugin.commons.shortnames.ShortNamesController;
+import com.microchip.mh3.plugin.generic_plugin.database.attachment.controller.AttachmentController;
 import com.microchip.mh3.plugin.generic_plugin.database.component.controller.ComponentController;
 import com.microchip.mh3.plugin.generic_plugin.database.component.controller.ComponentUtilController;
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.controller.SymbolController;
@@ -52,6 +53,7 @@ public class ControllerMapper {
 
         register(new ComponentController());
         register(new ComponentUtilController());
+        register(new AttachmentController());
 
         register(new LoggingController());
 
