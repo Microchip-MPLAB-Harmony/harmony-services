@@ -11,7 +11,7 @@ import com.microchip.h3.database.symbol.LongSymbol;
 import com.microchip.h3.database.symbol.HexSymbol;
 import com.microchip.h3.database.symbol.Symbol;
 import com.microchip.mh3.log.Log;
-import com.microchip.mh3.plugin.generic_plugin.database.txrx.SymbolAgent;
+import com.microchip.mh3.plugin.generic_plugin.database.symbol.controller.SymbolAgent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;

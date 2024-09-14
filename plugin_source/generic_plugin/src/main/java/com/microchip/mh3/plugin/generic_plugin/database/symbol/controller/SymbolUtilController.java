@@ -1,13 +1,17 @@
 package com.microchip.mh3.plugin.generic_plugin.database.symbol.controller;
 
+import com.microchip.h3.database.component.FrameworkComponent;
 import com.microchip.h3.database.symbol.ConfigSymbol;
+import com.microchip.h3.database.symbol.Symbol;
+import com.microchip.mh3.log.Log;
+import com.microchip.mh3.plugin.generic_plugin.database.component.controller.ComponentAgent;
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.dto.SymbolDto;
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.dto.SymbolDtoFactory;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Request;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Response;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerPath;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerMethod;
-import com.microchip.mh3.plugin.generic_plugin.database.txrx.SymbolAgent;
+import com.microchip.mh3.plugin.generic_plugin.database.symbol.controller.args.SymbolValue;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +84,48 @@ public class SymbolUtilController {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .forEach(ConfigSymbol::clearUserValue);
+
+        return Response.success();
+    }
+
+    @ControllerMethod
+    public Response setValues(Request request, String componentId, SymbolValue[] symbolValues) {
+
+        Optional<FrameworkComponent> foundComponent = ComponentAgent.singleton().findComponentById(componentId);
+        if (!foundComponent.isPresent()) {
+            return Response.error("Invalid Component ID : " + componentId, request);
+        }
+
+        FrameworkComponent component = foundComponent.get();
+
+        for (SymbolValue symbolValue : symbolValues) {
+            Symbol symbol = component.getSymbolByID(symbolValue.getSymbolId());
+
+            if (symbol != null && symbol instanceof ConfigSymbol) {
+                Object javaValue = SymbolAgent.singleton().jsToJava(symbol.getSymbolType(), symbolValue.getValue());
+                if (javaValue != null) {
+                    ((ConfigSymbol) symbol).setUserValue(javaValue);
+                } else {
+                    Log.write(this.getClass().getName(), Log.Severity.Warning,
+                            "Failed to set Symbol Value. Unsupported DataType of value. "
+                            + "Component ID: " + componentId + ", "
+                            + "Symbol ID: " + symbolValue.getSymbolId() + ", "
+                            + "Symbol Type: " + symbol.getSymbolType() + ", "
+                            + "Value Type: " + ((Object) symbolValue.getValue()).getClass().getName());
+                }
+            } else if (symbol == null) {
+                Log.write(this.getClass().getName(), Log.Severity.Warning,
+                        "Failed to set Symbol Value. Symbol ID is Invalid. "
+                        + "Component ID: " + componentId + ", "
+                        + "Symbol ID: " + symbolValue.getSymbolId());
+            } else { // symbol is not null & symbol type may be other than ConfigSymbol
+                Log.write(this.getClass().getName(), Log.Severity.Warning,
+                        "Failed to set Symbol Value. Unsupported Symbol Type. "
+                        + "Component ID: " + componentId + ", "
+                        + "Symbol ID: " + symbolValue.getSymbolId() + ", "
+                        + "Symbol Type: " + symbol.getSymbolType());
+            }
+        }
 
         return Response.success();
     }

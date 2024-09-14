@@ -7,7 +7,6 @@ import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerMethod;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerPath;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Request;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Response;
-import com.microchip.mh3.plugin.generic_plugin.database.txrx.SymbolAgent;
 
 @ControllerPath("KeyValueSetSymbol")
 public class KeyValueSetSymbolController extends ConfigSymbolController {

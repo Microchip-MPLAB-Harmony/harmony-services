@@ -1,4 +1,4 @@
-package com.microchip.mh3.plugin.generic_plugin.database.txrx;
+package com.microchip.mh3.plugin.generic_plugin.database.symbol.controller;
 
 import com.microchip.h3.database.ComponentManager;
 import com.microchip.h3.database.ConfigurationDatabase;
@@ -16,6 +16,7 @@ import com.microchip.h3.database.symbol.StringSymbol;
 import com.microchip.h3.database.symbol.Symbol;
 import com.microchip.h3.database.symbol.VisibleSymbol;
 import com.microchip.mh3.database.Database;
+import com.microchip.mh3.log.Log;
 import java.util.Optional;
 
 /**
@@ -140,7 +141,7 @@ public class SymbolAgent {
         return findLongSymbolValue(componentID, symbolID)
                 .orElseThrow(() -> new RuntimeException("LongSymbol not found : componentID = " + componentID + ", Symbol ID = " + symbolID));
     }
-    
+
     //------------Hex Symbol----------
     public Optional<HexSymbol> findHexSymbol(String componentId, String symbolId) {
         return this.findSymbol(componentId, symbolId)
@@ -233,6 +234,66 @@ public class SymbolAgent {
         return findSymbol(componentID, symbolID)
                 .filter(symbol -> symbol instanceof ComboSymbol)
                 .map(symbol -> (ComboSymbol) symbol);
+    }
+
+    //--------------Common APIs------------
+    /**
+     * The Javascript data types are converted to Java data types as shown
+     * below,      <code>
+     * ------------------------------
+     * Javascript -> Java
+     * ------------------------------
+     * boolean  -> Boolean
+     * string   -> String
+     * number   -> Double
+     * </code> since boolean and string values are directly mapped, for
+     * BooleanSymbol, StringSymbol and ComboSymbol, the values can be directly
+     * set. But for other symbol types the number is received as Double. So the
+     * Double should be converted to proper data type based on the symbol type.
+     *
+     * @param symbolType
+     * @param valueFromJS
+     * @return
+     */
+    public Object jsToJava(String symbolType, Object valueFromJS) {
+
+        switch (symbolType) {
+            case "Boolean":
+                if (valueFromJS instanceof Boolean) {
+                    return valueFromJS;
+                } else {
+                    return null;
+                }
+            case "String":
+            case "Combo":
+                if (valueFromJS instanceof String) {
+                    return valueFromJS;
+                } else {
+                    return null;
+                }
+            case "Integer":
+            case "KeyValueSet":
+                if (valueFromJS instanceof Double) {
+                    return Math.toIntExact(Math.round((Double) valueFromJS));
+                } else {
+                    return null;
+                }
+            case "Long":
+            case "Hex":
+                if (valueFromJS instanceof Double) {
+                    return Math.round((Double) valueFromJS);
+                } else {
+                    return null;
+                }
+            case "Float":
+                if (valueFromJS instanceof Double) {
+                    return ((Double) valueFromJS).floatValue();
+                } else {
+                    return null;
+                }
+            default:
+                return null;
+        }
     }
 
 }

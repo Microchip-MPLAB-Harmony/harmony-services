@@ -1,11 +1,12 @@
 package com.microchip.mh3.plugin.generic_plugin.database.symbol.controller;
 
+import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.database.symbol.dto.ConfigSymbolDto;
+import com.microchip.mh3.plugin.generic_plugin.database.symbol.dto.SymbolDto;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerMethod;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerPath;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Request;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.Response;
-import com.microchip.mh3.plugin.generic_plugin.database.txrx.SymbolAgent;
 
 @ControllerPath("ConfigSymbol")
 public class ConfigSymbolController extends VisibleSymbolController {
@@ -60,6 +61,29 @@ public class ConfigSymbolController extends VisibleSymbolController {
                         .symbolId(symbolId)
                         .value(e.getValue())
                         .build())
+                .map(Response::success)
+                .orElse(Response.error("Symbol Not Found : id or type does not match", request));
+    }
+
+    @ControllerMethod
+    public Response setValue(Request request, String componentId, String symbolId, Object value) {
+        return symbolAgent.findConfigSymbol(componentId, symbolId)
+                .map(e -> {
+                    Object javaValue = SymbolAgent.singleton().jsToJava(e.getSymbolType(), value);
+                    if (javaValue != null) {
+                        e.setUserValue(javaValue);
+                    } else {
+                        Log.write(this.getClass().getName(), Log.Severity.Warning,
+                                "Failed to set Symbol Value. Unsupported DataType of value. "
+                                + "Component ID: " + componentId + ", "
+                                + "Symbol ID: " + symbolId + ", "
+                                + "Symbol Type: " + e.getSymbolType() + ", "
+                                + "Value Type: " + value.getClass().getName());
+                    }
+
+                    return e;
+                })
+                .map(SymbolDto::new)
                 .map(Response::success)
                 .orElse(Response.error("Symbol Not Found : id or type does not match", request));
     }
