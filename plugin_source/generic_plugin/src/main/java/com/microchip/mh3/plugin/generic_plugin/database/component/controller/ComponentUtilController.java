@@ -4,6 +4,8 @@ import com.microchip.h3.database.component.GroupComponent;
 import com.microchip.h3.database.component.InstanceComponent;
 import com.microchip.mcc.harmony.Harmony3Library;
 import com.microchip.mcc.harmony.HarmonyPluginInterface;
+import com.microchip.mh3.database.Database;
+import com.microchip.mh3.log.Log;
 import com.microchip.mh3.plugin.generic_plugin.database.component.dto.ComponentDto;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerMethod;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.ControllerPath;
@@ -13,6 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.microchip.mh3.plugin.generic_plugin.database.txrx.OptionalArg;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 @ControllerPath("ComponentUtil")
@@ -155,6 +160,17 @@ public class ComponentUtilController {
         } else {
             return Response.error("Unable to create Group Component : " + groupComponentId, request);
         }
+    }
+
+    @ControllerMethod
+    public Response sendMessage(Request request, String componentId, String messageId, Map<String, Object> args) {
+        try {
+            Map<String, Object> response = Database.get().getComponentManager().sendMessage(componentId, messageId, args);
+            return Response.success(response);
+        } catch (Exception ex) {
+            return Response.error("Failed to send message. Component ID: " + componentId + ", Message ID: " + messageId, request);
+        }
+
     }
 
 }
