@@ -1,5 +1,22 @@
 # MPLAB® Harmony Services Release Notes
 
+## MPLAB® Harmony Services Release v1.5.0
+
+### New Features & Bug fixes
+- Introduced Component specific APIs
+- Added Attachment related APIs and Updated Component Hooks with attachment specific properties.
+- Added API to set value of symbol regardless of symbol type
+- Added API to set value for multiple symbols in one call.
+- Introduce sendMessage API in ComponentUtilController.
+
+### Known Issues
+- None
+
+### Development Tools
+- [MPLAB® X IDE v6.20 or Later](https://www.microchip.com/mplab/mplab-x-ide)
+- [MPLAB® Code Configurator (MCC) v5.5.1, MPLAB® X plugin](https://www.microchip.com/en-us/tools-resources/configure/mplab-code-configurator)
+- [Harmony3Librabry v1.5.2 or Later](https://www.npmjs.com/package/@mchp-mcc/harmony). Obtained from MCC Content Manager.
+
 ## MPLAB® Harmony Services Release v1.4.0
 
 ### Bug fixes
